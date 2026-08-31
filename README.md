@@ -1,0 +1,120 @@
+# Diego DPL — Portafolio de creador de contenido
+
+Web personal de Diego DPL: running, viajes y lifestyle con estética
+documental analógica. Astro 5 + Tailwind v4, sitio estático.
+
+El hilo conductor de todo el diseño es **el polvo**: la textura del grano
+analógico, la partícula que se levanta al correr y la metáfora del camino.
+Las secciones alternan **noche** y **día** para que la página respire, y el
+recorrido sigue la estructura del viaje del héroe: la llamada, el desierto,
+las pruebas, el regreso y la invitación.
+
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # genera dist/
+npm run preview  # sirve dist/ para comprobarlo antes de publicar
+```
+
+---
+
+## Dónde se edita cada cosa
+
+**Casi todo se cambia en un solo archivo: `src/data/site.ts`.**
+No hace falta tocar componentes.
+
+| Qué | Dónde |
+| --- | --- |
+| Nombre, email, ubicación, coordenadas | `site` |
+| Instagram, TikTok, YouTube, Strava | `socials` |
+| Menú de navegación | `nav` |
+| Manifiesto y los tres actos del camino | `manifesto` |
+| Galería de encuadres | `work` |
+| Números del media kit | `metrics` y `audience` |
+| Servicios para marcas | `services` |
+| Etiquetas de la marquesina | `brands` |
+| Opciones del formulario | `contact` |
+
+La galería (`work`) **no son encargos ni campañas**: es una selección de
+encuadres reales. Cada entrada lleva un `title` corto, un `caption` que
+describe qué se ve y qué demuestra que sabes hacer, y unas `capability` que
+salen como etiquetas. Está escrita así a propósito: una marca necesita saber
+qué le vas a entregar, y eso se enseña mejor con un pie honesto que con un
+caso de estudio inventado. Si algún día tienes un trabajo de cliente que
+puedas publicar, ese sí merece su propia entrada con nombre y año.
+
+### Poner tus fotos
+
+Las fotos viven en **`src/assets/media/`**. Puestas ahí, Astro las optimiza
+sola: genera `webp`, varios tamaños, `srcset` y versión retina, y sirve a cada
+móvil sólo lo que necesita. (Una foto de 590 kB acaba pesando 93 kB.)
+
+Ya están puestas nueve:
+
+| Archivo | Dónde sale |
+| --- | --- |
+| `diego-super8.jpg` | Hero — panel derecho en escritorio, fondo a sangre en móvil |
+| `el-desierto.jpg` | Sección «El desierto», a sangre completa |
+| `casa-sierra.jpg` | Sobre mí |
+| `despues-del-esfuerzo.jpg` | Trabajo — «Kilómetro cero» |
+| `a-pulmon.jpg` | Trabajo — «A pulmón» |
+| `camino-al-anochecer.jpg` | Trabajo — «La ruta del polvo» |
+| `hora-azul.jpg` | Trabajo — «Antes del sol» |
+| `sendero.jpg` | Trabajo — «Terreno hostil» |
+| `cenital.jpg` | Media kit — «Cómo trabajo» |
+
+Queda **una** tarjeta de trabajo con placeholder («Mediterráneo interior») y
+las tres portadas del diario.
+
+> **Sobre el peso.** El archivo que guardas aquí no es el que descarga nadie.
+> Astro genera desde él las variantes `webp` y sirve la que toque: la foto de
+> «El desierto» pesa 2,4 MB en el repositorio y el visitante recibe **56 kB en
+> móvil** o 440 kB en un portátil retina a pantalla completa. Así que guarda
+> siempre la mejor calidad que tengas; comprimir el original de más sólo
+> empeora el resultado final.
+
+Para añadir una a un **proyecto del portafolio**, en `src/data/site.ts`:
+
+```ts
+import salYAsfalto from '~/assets/media/sal-y-asfalto.jpg';   // arriba del archivo
+
+// …y en el proyecto que toque:
+{
+  title: 'Sal y asfalto',
+  image: salYAsfalto,
+  position: '50% 35%',   // opcional: encuadre si hay que recortar
+  …
+}
+```
+
+Para el **hero** y **«Sobre mí»**, cambia el `import` de arriba de
+`src/components/sections/Hero.astro` y `About.astro`.
+
+El marco recorta con `object-fit: cover` según `format`: `portrait` (4:5),
+`landscape` (16:10), `square` (1:1) y `tall` (3:4.6). Si el recorte deja fuera
+lo importante, ajusta `position` (`'50% 30%'` sube el encuadre, `'50% 70%'` lo
+baja).
+
+> También puedes dejar una foto en `public/media/` y apuntar con una cadena
+> (`image: '/media/foto.jpg'`), pero entonces **no se optimiza**. Úsalo sólo
+> para pruebas rápidas.
+
+### Publicar en Vercel
+
+Sitio estático: no hace falta adaptador ni servidor.
+
+1. Sube el proyecto a un repositorio de GitHub.
+2. En Vercel, **Add New → Project** y elige el repositorio. Detecta Astro solo:
+   build `npm run build`, salida `dist`. No toques nada.
+3. En **Settings → Environment Variables** añade `PUBLIC_WEB3FORMS_KEY` con tu
+   clave (ver más arriba). Si no la pones, el formulario sigue funcionando pero
+   abre el cliente de correo del visitante en vez de enviártelo.
+4. En **Settings → Domains** añade `diegodpl.com` y `www.diegodpl.com`, y
+   apunta los DNS donde tengas el dominio a lo que te indique Vercel.
+
+El `vercel.json` del proyecto ya deja las imágenes y el JS cacheados un año
+(llevan hash en el nombre, así que se renuevan solos al desplegar) y añade dos
+cabeceras de seguridad básicas.
+
+Antes de publicar, comprueba que las **métricas del media kit** siguen al día
+en `src/data/site.ts`.

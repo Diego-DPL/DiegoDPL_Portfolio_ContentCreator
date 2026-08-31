@@ -1,0 +1,168 @@
+---
+import Base from '~/layouts/Base.astro';
+import DustFrame from '~/components/DustFrame.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('journal', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const all = (await getCollection('journal', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const index = all.findIndex((p) => p.id === post.id);
+const next = all[(index + 1) % all.length];
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+---
+
+<Base title={post.data.title} description={post.data.excerpt} preload={false}>
+  <article>
+    <header class="po-hero" data-tone="night">
+      <div class="shell">
+        <a href="/diario" class="kicker po-back link-dust">← Diario</a>
+        <h1 class="po-hero__title display t-lg" data-reveal>{post.data.title}</h1>
+        <p class="po-hero__meta kicker" data-reveal style="--rv-delay:.1s">
+          {fmt(post.data.date)}
+          {post.data.place && <span> · {post.data.place}</span>}
+        </p>
+        {
+          post.data.tags.length > 0 && (
+            <ul class="po-tags" data-reveal style="--rv-delay:.16s">
+              {post.data.tags.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="po-cover shell" data-tone="night">
+      <DustFrame
+        src={post.data.cover}
+        alt={post.data.title}
+        format="landscape"
+        label={post.data.place ?? 'Diario'}
+        seed={index + 3}
+        loading="eager"
+      />
+    </div>
+
+    <div class="po-body" data-tone="day">
+      <div class="shell">
+        <div class="prose">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <section class="po-next" data-tone="night">
+    <div class="shell">
+      <p class="kicker" data-reveal>Siguiente</p>
+      <a href={`/diario/${next.id}/`} class="po-next__link" data-reveal style="--rv-delay:.08s">
+        <span class="po-next__title display t-lg">{next.data.title}</span>
+        <span class="po-next__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .po-hero {
+    padding-block: 9rem clamp(2.5rem, 5vw, 4rem);
+    display: grid;
+    align-content: end;
+  }
+  .po-back { display: inline-block; margin-bottom: 2.5rem; }
+  .po-hero__title { margin: 0; max-width: 20ch; }
+  .po-hero__meta { margin: 1.5rem 0 0; color: var(--fg-muted); }
+
+  .po-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.25rem 0 0; padding: 0; }
+  .po-tags li {
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  .po-cover { padding-bottom: clamp(3rem, 7vw, 6rem); }
+
+  .po-body { padding-block: clamp(4rem, 9vw, 8rem); }
+
+  /* — Tipografía de lectura — */
+  .prose {
+    max-width: 68ch;
+    margin-inline: auto;
+    font-size: clamp(1.05rem, 1rem + 0.35vw, 1.2rem);
+    line-height: 1.75;
+    color: var(--fg-muted);
+  }
+  .prose :global(p) { margin: 0 0 1.5em; text-wrap: pretty; }
+  .prose :global(p:first-of-type) {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: var(--fg);
+  }
+  .prose :global(h2) {
+    margin: 2.5em 0 0.75em;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 1.35rem + 1.1vw, 2.25rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    text-wrap: balance;
+  }
+  .prose :global(h3) {
+    margin: 2em 0 0.6em;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg);
+  }
+  .prose :global(strong) { color: var(--fg); font-weight: 600; }
+  .prose :global(em) { font-family: var(--font-display); font-size: 1.1em; }
+  .prose :global(a) { color: var(--accent); text-decoration: underline; text-underline-offset: 0.2em; }
+  .prose :global(blockquote) {
+    margin: 2em 0;
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--accent);
+    font-family: var(--font-display);
+    font-size: 1.35em;
+    line-height: 1.35;
+    color: var(--fg);
+  }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 1.5em; padding-left: 1.25rem; }
+  .prose :global(li) { margin-bottom: 0.5em; }
+  .prose :global(hr) { margin: 3em 0; border: 0; border-top: 1px solid var(--rule); }
+
+  /* — Siguiente — */
+  .po-next { padding-block: clamp(4rem, 9vw, 8rem); }
+  .po-next__link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    transition: padding-inline 0.6s var(--ease-dust);
+  }
+  .po-next__link:hover { padding-inline: 1rem; }
+  .po-next__title { max-width: 20ch; transition: color 0.45s var(--ease-soft); }
+  .po-next__link:hover .po-next__title { color: var(--color-ochre); font-style: italic; }
+  .po-next__arrow { font-size: 1.75rem; color: var(--fg-faint); transition: transform 0.55s var(--ease-dust); }
+  .po-next__link:hover .po-next__arrow { transform: translateX(0.5rem); }
+</style>

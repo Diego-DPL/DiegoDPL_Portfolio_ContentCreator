@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('journal', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+---
+
+<section class="jr" id="diario" data-tone="day">
+  <div class="shell">
+    <header class="jr__head">
+      <div>
+        <p class="kicker" data-reveal>05 — Diario</p>
+        <h2 class="jr__title display t-lg" data-reveal style="--rv-delay:.08s">
+          Notas del<br /><em>camino</em>
+        </h2>
+      </div>
+      <a href="/diario" class="jr__all kicker link-dust" data-reveal style="--rv-delay:.16s">
+        Ver todas →
+      </a>
+    </header>
+
+    <ul class="jr__list">
+      {
+        posts.map((post, i) => (
+          <li class="jr__item" data-reveal style={`--rv-delay:${i * 90}ms`}>
+            <a href={`/diario/${post.id}/`} class="jr__link">
+              <span class="jr__date kicker">{fmt(post.data.date)}</span>
+              <span class="jr__name display">{post.data.title}</span>
+              <span class="jr__excerpt">{post.data.excerpt}</span>
+              <span class="jr__arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .jr { padding-block: clamp(5rem, 11vw, 11rem); }
+
+  .jr__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .jr__title { margin: 0.75rem 0 0; }
+  .jr__title em { font-style: italic; color: var(--accent); }
+
+  .jr__list { list-style: none; margin: 0; padding: 0; }
+
+  .jr__item { border-top: 1px solid var(--rule); }
+  .jr__item:last-child { border-bottom: 1px solid var(--rule); }
+
+  .jr__link {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1.5rem;
+    padding-block: clamp(1.5rem, 3vw, 2.25rem);
+    transition: padding-inline 0.6s var(--ease-dust);
+  }
+  .jr__link:hover { padding-inline: 1rem; }
+
+  .jr__date { grid-column: 1; color: var(--fg-faint); }
+  .jr__name {
+    grid-column: 1;
+    font-size: clamp(1.5rem, 1.15rem + 1.7vw, 2.75rem);
+    line-height: 1.05;
+    transition: color 0.5s var(--ease-soft);
+    text-wrap: balance;
+  }
+  .jr__link:hover .jr__name { color: var(--accent); font-style: italic; }
+
+  .jr__excerpt {
+    grid-column: 1;
+    max-width: 58ch;
+    margin-top: 0.35rem;
+    font-size: 0.975rem;
+    line-height: 1.6;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
+
+  .jr__arrow {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    font-size: 1.5rem;
+    color: var(--fg-faint);
+    transition: transform 0.55s var(--ease-dust), color 0.4s linear;
+  }
+  .jr__link:hover .jr__arrow { transform: translateX(0.4rem); color: var(--accent); }
+</style>

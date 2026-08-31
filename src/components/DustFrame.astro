@@ -1,0 +1,161 @@
+---
+/**
+ * MARCO
+ * -----
+ * Contenedor de imagen con revelado de cortina. Acepta tres cosas en `src`:
+ *
+ *   1. Una imagen importada desde src/assets → la optimiza Astro (webp,
+ *      srcset y retina automáticos). Es la opción recomendada.
+ *   2. Una ruta de texto a /public (p. ej. "/media/foto.jpg") → se usa tal cual.
+ *   3. null → dibuja un placeholder de polvo, para poder juzgar la maqueta
+ *      antes de tener la foto.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src?: ImageMetadata | string | null;
+  alt?: string;
+  /** Proporción del marco */
+  format?: 'portrait' | 'landscape' | 'square' | 'tall';
+  /** Texto del placeholder mientras no hay imagen */
+  label?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  /** Cuánto espacio ocupa la imagen, para que el navegador elija bien el tamaño */
+  sizes?: string;
+  /** Anchos a generar. Súbelo en secciones a sangre; bájalo en miniaturas. */
+  widths?: number[];
+  /** Compresión del webp (0-100). Baja en fondos grandes que van bajo un velo. */
+  quality?: number;
+  /** Encuadre cuando la foto no tiene la misma proporción que el marco */
+  position?: string;
+  /** Semilla para que cada placeholder se vea distinto */
+  seed?: number;
+}
+
+const {
+  src = null,
+  alt = '',
+  format = 'landscape',
+  label,
+  class: className = '',
+  loading = 'lazy',
+  sizes = '(min-width: 900px) 50vw, 100vw',
+  widths = [420, 700, 1000, 1400, 1900],
+  quality = 78,
+  position = '50% 50%',
+  seed = 1,
+} = Astro.props;
+
+const ratios: Record<string, string> = {
+  portrait: '4 / 5',
+  landscape: '16 / 10',
+  square: '1 / 1',
+  tall: '3 / 4.6',
+};
+
+// Cada placeholder recibe su propio ángulo y horizonte
+const angle = 150 + ((seed * 47) % 90);
+const horizon = 38 + ((seed * 23) % 30);
+const hue = (seed * 31) % 3;
+const tints = [
+  ['#3A2F26', '#191410', '#0C0A08'],
+  ['#463427', '#221A14', '#0D0B09'],
+  ['#33302A', '#1C1815', '#0B0A09'],
+];
+const [c1, c2, c3] = tints[hue]!;
+
+const managed = typeof src === 'object' && src !== null ? (src as ImageMetadata) : null;
+
+/**
+ * Nunca pedimos un ancho mayor que el original: si lo hiciéramos, Astro
+ * escalaría la foto hacia arriba y generaría archivos más pesados sin un
+ * solo píxel más de detalle. Recortamos la lista al tamaño real y nos
+ * aseguramos de incluir el original como variante máxima.
+ */
+const usableWidths = managed
+  ? [...new Set([...widths.filter((w) => w < managed.width), managed.width])].sort((a, b) => a - b)
+  : widths;
+---
+
+<figure
+  class:list={['frame frame--reveal', className]}
+  style={`aspect-ratio:${ratios[format]}; --pos:${position}`}
+  data-reveal="mask"
+>
+  {
+    managed ? (
+      <Image
+        src={managed}
+        alt={alt}
+        widths={usableWidths}
+        sizes={sizes}
+        quality={quality}
+        loading={loading}
+        decoding="async"
+      />
+    ) : src ? (
+      <img src={src as string} alt={alt} loading={loading} decoding="async" />
+    ) : (
+      <div
+        class="dust-plate"
+        style={`--angle:${angle}deg; --horizon:${horizon}%; --c1:${c1}; --c2:${c2}; --c3:${c3}`}
+        role="img"
+        aria-label={alt || 'Imagen pendiente'}
+      >
+        <span class="dust-plate__label kicker">{label ?? 'Imagen'}</span>
+      </div>
+    )
+  }
+</figure>
+
+<style>
+  .frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos, 50% 50%);
+  }
+
+  .dust-plate {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: end start;
+    padding: 1.25rem;
+    background:
+      radial-gradient(120% 80% at 50% var(--horizon), color-mix(in oklab, var(--c1) 70%, transparent) 0%, transparent 62%),
+      linear-gradient(var(--angle), var(--c1) 0%, var(--c2) 48%, var(--c3) 100%);
+    isolation: isolate;
+  }
+
+  /* La duna: una curva de arena que cruza el marco */
+  .dust-plate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(140% 60% at 20% 108%, color-mix(in oklab, var(--c1) 85%, #fff 8%) 0%, transparent 58%),
+      radial-gradient(90% 44% at 88% 104%, color-mix(in oklab, var(--c2) 90%, #000 10%) 0%, transparent 60%);
+    opacity: 0.85;
+  }
+
+  /* Grano propio del marco, más marcado que el del sitio */
+  .dust-plate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--grain-src);
+    background-size: 180px 180px;
+    opacity: 0.14;
+    mix-blend-mode: overlay;
+  }
+
+  .dust-plate__label {
+    position: relative;
+    z-index: 1;
+    color: color-mix(in oklab, #F7F2E9 46%, transparent);
+  }
+</style>

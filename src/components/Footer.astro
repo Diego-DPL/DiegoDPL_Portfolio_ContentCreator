@@ -1,0 +1,87 @@
+---
+import { site, socials, nav } from '~/data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="foot" data-tone="night">
+  <div class="shell">
+    <div class="foot__top">
+      <p class="foot__claim display t-lg" data-reveal>
+        {site.tagline}
+      </p>
+    </div>
+
+    <div class="foot__grid rule-t">
+      <div class="foot__col">
+        <p class="kicker">Dónde</p>
+        <p class="foot__val">{site.location}</p>
+        <p class="foot__coords kicker">{site.coords}</p>
+      </div>
+
+      <div class="foot__col">
+        <p class="kicker">Índice</p>
+        <ul class="foot__list">
+          {nav.map((i) => <li><a href={i.href} class="link-dust">{i.label}</a></li>)}
+        </ul>
+      </div>
+
+      <div class="foot__col">
+        <p class="kicker">Seguir</p>
+        <ul class="foot__list">
+          {
+            socials.map((s) => (
+              <li>
+                <a href={s.href} class="link-dust" target="_blank" rel="me noopener">
+                  {s.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="foot__col">
+        <p class="kicker">Escribir</p>
+        <a href={`mailto:${site.email}`} class="foot__mail link-dust">{site.email}</a>
+      </div>
+    </div>
+
+    <div class="foot__bottom rule-t">
+      <p class="kicker">© {year} {site.name}</p>
+      <p class="kicker">Hecho con polvo y paciencia</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot { padding-block: clamp(4rem, 8vw, 9rem) 2.5rem; }
+
+  .foot__top { padding-bottom: clamp(3rem, 6vw, 6rem); }
+  .foot__claim { max-width: 18ch; font-style: italic; }
+
+  .foot__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-top: 2.5rem;
+  }
+  @media (min-width: 640px) { .foot__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .foot__grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .foot__col { display: grid; gap: 0.75rem; align-content: start; }
+  .foot__val { margin: 0; font-size: 0.95rem; }
+  .foot__coords { color: var(--fg-faint); }
+
+  .foot__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .foot__list a, .foot__mail { font-size: 0.95rem; }
+  .foot__mail { justify-self: start; }
+
+  .foot__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(3rem, 6vw, 6rem);
+    padding-top: 1.5rem;
+  }
+</style>

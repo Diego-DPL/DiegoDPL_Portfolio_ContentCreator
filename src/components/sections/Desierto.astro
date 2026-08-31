@@ -1,0 +1,93 @@
+---
+/**
+ * EL DESIERTO
+ * -----------
+ * Un respiro entre el manifiesto y el trabajo. Una sola imagen a sangre y
+ * una sola frase: el tramo del camino en el que no hay nadie mirando.
+ * La foto va casi entera porque su fuerza está en la escala.
+ */
+import DustFrame from '~/components/DustFrame.astro';
+import elDesierto from '~/assets/media/el-desierto.jpg';
+---
+
+<section class="dst" data-tone="night">
+  <div class="dst__media" data-parallax="9">
+    <DustFrame
+      src={elDesierto}
+      alt="Diego DPL, diminuto en mitad de unos badlands, con las manos en las rodillas después de correr"
+      format="landscape"
+      sizes="100vw"
+      widths={[720, 1100, 1500, 1900, 2160]}
+      quality={60}
+      position="50% 62%"
+    />
+  </div>
+
+  <div class="dst__scrim" aria-hidden="true"></div>
+
+  <div class="dst__text shell">
+    <p class="kicker" data-reveal>El desierto</p>
+    <p class="dst__line display" data-reveal style="--rv-delay:.12s">
+      Aquí no hay nadie<br /><em>que te vea.</em>
+    </p>
+  </div>
+</section>
+
+<style>
+  .dst {
+    position: relative;
+    min-height: min(86svh, 46rem);
+    display: flex;
+    align-items: flex-end;
+    padding-block: clamp(3rem, 7vw, 6rem);
+    overflow: clip;
+  }
+
+  .dst__media {
+    position: absolute;
+    inset: -7% 0;
+    z-index: 0;
+  }
+  .dst__media :global(.frame) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto !important;
+  }
+
+  .dst__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(
+        180deg,
+        rgb(11 9 7 / 0.55) 0%,
+        rgb(11 9 7 / 0.05) 22%,
+        rgb(11 9 7 / 0.3) 55%,
+        rgb(11 9 7 / 0.88) 92%,
+        rgb(11 9 7 / 0.96) 100%
+      );
+  }
+
+  .dst__text {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: grid;
+    gap: 1rem;
+    color: var(--color-sand-50);
+  }
+
+  .dst__line {
+    margin: 0;
+    max-width: 16ch;
+    font-size: clamp(2.1rem, 1.2rem + 4.2vw, 5.25rem);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .dst__line em { font-style: italic; color: var(--color-ochre); }
+
+  @media (min-width: 900px) {
+    .dst { min-height: min(94svh, 54rem); }
+  }
+</style>

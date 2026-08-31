@@ -1,0 +1,29 @@
+---
+import Base from '~/layouts/Base.astro';
+---
+
+<Base title="Te has salido del camino" description="Página no encontrada." preload={false}>
+  <section class="nf" data-tone="night">
+    <div class="shell nf__inner">
+      <p class="kicker" data-reveal>Error 404</p>
+      <h1 class="nf__title display t-xl" data-reveal style="--rv-delay:.08s">
+        Te has salido<br /><em>del camino</em>
+      </h1>
+      <p class="lede nf__lede" data-reveal style="--rv-delay:.16s">
+        Aquí no hay nada. Pasa a veces: se toma un desvío y el desvío no lleva
+        a ningún sitio. Se vuelve y se sigue.
+      </p>
+      <a href="/" class="btn" data-magnetic data-reveal style="--rv-delay:.24s">
+        Volver al inicio <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 100svh; display: grid; align-items: center; padding-block: 8rem; }
+  .nf__inner { display: grid; gap: 1.5rem; justify-items: start; }
+  .nf__title { margin: 0.5rem 0 0; }
+  .nf__title em { font-style: italic; color: var(--color-ochre); }
+  .nf__lede { max-width: 40ch; margin: 0 0 1rem; }
+</style>

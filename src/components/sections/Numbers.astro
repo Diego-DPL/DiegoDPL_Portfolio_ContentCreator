@@ -1,0 +1,90 @@
+---
+import { metrics, brands } from '~/data/site';
+import Marquee from '~/components/Marquee.astro';
+---
+
+<section class="nums" data-tone="night">
+  <Marquee items={brands} speed={0.35} class="nums__marquee" />
+
+  <div class="shell nums__inner">
+    <div class="nums__head">
+      <p class="kicker" data-reveal>04 — Para marcas</p>
+      <p class="nums__lede lede" data-reveal style="--rv-delay:.1s">
+        Una audiencia pequeña que escucha vale más que una grande que pasa de largo.
+        Estos son los números, sin maquillar.
+      </p>
+    </div>
+
+    <ul class="nums__list">
+      {
+        metrics.map((m, i) => {
+          const decimals = Number.isInteger(m.value) ? 0 : 1;
+          return (
+            <li class="nums__item" data-reveal style={`--rv-delay:${i * 90}ms`}>
+              <p class="nums__value display">
+                <span data-count={m.value} data-decimals={decimals}>0</span>
+                {m.suffix && <span class="nums__suffix">{m.suffix}</span>}
+              </p>
+              <p class="nums__label">{m.label}</p>
+              {m.note && <p class="nums__note kicker">{m.note}</p>}
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <a href="/media-kit" class="btn btn--ghost nums__cta" data-magnetic>
+      Ver el media kit completo
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .nums { padding-block: clamp(4rem, 9vw, 8rem); }
+  /* :global() porque el scope de Astro no llega a la raíz de <Marquee> */
+  .nums :global(.nums__marquee) { margin-bottom: clamp(3.5rem, 8vw, 7rem); opacity: 0.9; }
+
+  .nums__inner { display: grid; gap: clamp(2.5rem, 6vw, 4.5rem); }
+
+  .nums__head {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 46ch;
+  }
+  .nums__lede { margin: 0; }
+
+  .nums__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* auto-fit: la fila se recoloca sola si añades o quitas una métrica */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0;
+  }
+
+  .nums__item {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    padding: 1.75rem 1rem 1.75rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  @media (min-width: 640px) {
+    .nums__item + .nums__item { padding-left: clamp(1rem, 2vw, 2rem); border-left: 1px solid var(--rule); }
+  }
+
+  .nums__value {
+    margin: 0;
+    font-size: clamp(2.75rem, 1.6rem + 4.4vw, 5.5rem);
+    line-height: 0.9;
+    color: var(--color-sand-50);
+    font-variant-numeric: tabular-nums;
+  }
+  .nums__suffix { color: var(--color-ochre); }
+  .nums__label { margin: 0.5rem 0 0; font-size: 0.95rem; }
+  .nums__note { color: var(--fg-faint); }
+
+  .nums__cta { justify-self: start; }
+</style>

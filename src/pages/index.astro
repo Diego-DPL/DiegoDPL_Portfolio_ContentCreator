@@ -1,0 +1,27 @@
+---
+import Base from '~/layouts/Base.astro';
+import Hero from '~/components/sections/Hero.astro';
+import Manifesto from '~/components/sections/Manifesto.astro';
+import Desierto from '~/components/sections/Desierto.astro';
+import Work from '~/components/sections/Work.astro';
+import About from '~/components/sections/About.astro';
+import Numbers from '~/components/sections/Numbers.astro';
+import JournalTeaser from '~/components/sections/JournalTeaser.astro';
+import Contact from '~/components/sections/Contact.astro';
+---
+
+<Base>
+  <!--
+    El orden es el del viaje: la llamada, el desierto, las pruebas,
+    quién eres al volver, y la invitación a que alguien camine contigo.
+    Las secciones alternan noche y día para que la web respire.
+  -->
+  <Hero />
+  <Manifesto />
+  <Desierto />
+  <Work />
+  <About />
+  <Numbers />
+  <JournalTeaser />
+  <Contact />
+</Base>

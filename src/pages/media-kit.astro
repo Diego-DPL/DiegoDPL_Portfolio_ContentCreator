@@ -1,0 +1,302 @@
+---
+import Base from '~/layouts/Base.astro';
+import Marquee from '~/components/Marquee.astro';
+import DustFrame from '~/components/DustFrame.astro';
+import { site, metrics, audience, services, brands } from '~/data/site';
+import cenital from '~/assets/media/cenital.jpg';
+---
+
+<Base
+  title="Media kit"
+  description="Media kit de Diego DPL: audiencia, alcance y servicios de creación de contenido para marcas de running, outdoor, viajes y lifestyle."
+  preload={false}
+>
+  <!-- Portada -->
+  <section class="mk-hero" data-tone="night">
+    <div class="shell">
+      <p class="kicker" data-reveal>Media kit · {new Date().getFullYear()}</p>
+      <h1 class="mk-hero__title display t-xl" data-reveal style="--rv-delay:.08s">
+        Trabajemos<br /><em>juntos</em>
+      </h1>
+      <p class="lede mk-hero__lede" data-reveal style="--rv-delay:.16s">
+        Dirijo, ruedo y edito contenido de running, viajes y estilo de vida con
+        una estética documental analógica. Sin equipo intermedio: hablas conmigo
+        y de mí sale la pieza terminada.
+      </p>
+    </div>
+  </section>
+
+  <!-- Los números -->
+  <section class="mk-nums" data-tone="day">
+    <div class="shell">
+      <header class="mk-head">
+        <p class="kicker" data-reveal>01 — La audiencia</p>
+        <span class="mk-rule" data-reveal="line"></span>
+      </header>
+
+      <ul class="mk-metrics">
+        {
+          metrics.map((m, i) => {
+            const decimals = Number.isInteger(m.value) ? 0 : 1;
+            return (
+              <li class="mk-metric" data-reveal style={`--rv-delay:${i * 80}ms`}>
+                <p class="mk-metric__value display">
+                  <span data-count={m.value} data-decimals={decimals}>0</span>
+                  {m.suffix && <span class="mk-metric__suffix">{m.suffix}</span>}
+                </p>
+                <p class="mk-metric__label">{m.label}</p>
+                {m.note && <p class="kicker mk-metric__note">{m.note}</p>}
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <div class="mk-split">
+        <div class="mk-bars">
+          <p class="kicker mk-bars__title">Quién me ve</p>
+          <ul class="mk-bars__list">
+            {
+              audience.map((a) => (
+                <li class="mk-bar">
+                  <span class="mk-bar__label">{a.label}</span>
+                  <span class="mk-bar__track">
+                    <span class="mk-bar__fill" data-bar style={`--pct:${a.value}%`} />
+                  </span>
+                  <span class="mk-bar__value kicker">{a.value.toLocaleString('es-ES')}%</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="mk-note" data-reveal>
+          <p class="mk-note__text">
+            Los números importan menos que quién hay detrás. Mi comunidad es gente
+            que entrena, que viaja y que compra material porque lo usa —no porque
+            lo haya visto pasar.
+          </p>
+          <p class="kicker mk-note__source">
+            Datos de Instagram Insights y TikTok Analytics · Actualizado cada trimestre
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Qué hago -->
+  <section class="mk-serv" data-tone="night">
+    <div class="shell">
+      <header class="mk-head">
+        <p class="kicker" data-reveal>02 — Servicios</p>
+        <span class="mk-rule" data-reveal="line"></span>
+      </header>
+
+      <ul class="mk-serv__list">
+        {
+          services.map((s, i) => (
+            <li class="serv" data-reveal style={`--rv-delay:${i * 70}ms`}>
+              <span class="serv__index kicker">{s.index}</span>
+              <div class="serv__main">
+                <h2 class="serv__title display">{s.title}</h2>
+                <p class="serv__body">{s.body}</p>
+              </div>
+              <ul class="serv__includes">
+                {s.includes.map((inc) => (
+                  <li>{inc}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Cómo trabajo -->
+  <section class="mk-how" data-tone="day">
+    <div class="shell mk-how__grid">
+      <div class="mk-how__media">
+        <DustFrame
+          src={cenital}
+          alt="Vista cenital de Diego DPL corriendo por un sendero de tierra"
+          format="portrait"
+          sizes="(min-width: 950px) 38vw, 100vw"
+          position="50% 45%"
+          seed={19}
+        />
+      </div>
+      <div class="mk-how__text">
+        <p class="kicker" data-reveal>03 — Cómo trabajo</p>
+        <h2 class="mk-how__title display t-lg" data-reveal style="--rv-delay:.08s">
+          Pocas piezas.<br /><em>Bien hechas.</em>
+        </h2>
+        <ol class="mk-steps" data-reveal style="--rv-delay:.16s">
+          {/* El texto va envuelto en <span>: el <li> es una rejilla de dos
+              columnas y un nodo de texto suelto caería en la del número. */}
+          <li><span><strong>Hablamos.</strong> Qué quieres contar y a quién. Media hora basta.</span></li>
+          <li><span><strong>Propongo.</strong> Concepto, referencias, formatos y presupuesto cerrado.</span></li>
+          <li><span><strong>Rodamos.</strong> Yo me encargo de todo. Tú validas una sola vez.</span></li>
+          <li><span><strong>Entrego.</strong> Máster, verticales, fotos y copy. Con derechos claros.</span></li>
+          <li><span><strong>Medimos.</strong> Informe real a los treinta días. Sin adornos.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cierre -->
+  <section class="mk-cta" data-tone="night">
+    <Marquee items={brands} speed={0.4} dir="right" />
+    <div class="shell mk-cta__inner">
+      <h2 class="mk-cta__title display t-xl" data-reveal>
+        ¿Empezamos?
+      </h2>
+      <div class="mk-cta__actions" data-reveal style="--rv-delay:.1s">
+        <a href="/#contacto" class="btn" data-magnetic>Escríbeme <span aria-hidden="true">→</span></a>
+        <a href={`mailto:${site.email}`} class="btn btn--ghost" data-magnetic>{site.email}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .mk-hero {
+    min-height: 82svh;
+    display: flex;
+    align-items: flex-end;
+    padding-block: 9rem clamp(3rem, 7vw, 6rem);
+  }
+  .mk-hero__title { margin: 1rem 0 1.5rem; }
+  .mk-hero__title em { font-style: italic; color: var(--color-ochre); }
+  .mk-hero__lede { max-width: 46ch; margin: 0; }
+
+  .mk-head {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+  .mk-rule { flex: 1; height: 1px; }
+
+  /* — Métricas — */
+  .mk-nums { padding-block: clamp(5rem, 10vw, 10rem); }
+  .mk-metrics {
+    list-style: none;
+    margin: 0 0 clamp(3.5rem, 8vw, 7rem);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  }
+  .mk-metric { padding: 1.5rem 1rem 1.5rem 0; border-top: 1px solid var(--rule); }
+  @media (min-width: 640px) {
+    .mk-metric + .mk-metric { padding-left: clamp(1rem, 2vw, 2rem); border-left: 1px solid var(--rule); }
+  }
+  .mk-metric__value {
+    margin: 0;
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+  }
+  .mk-metric__suffix { color: var(--accent); }
+  .mk-metric__label { margin: 0.5rem 0 0.15rem; font-size: 0.95rem; }
+  .mk-metric__note { color: var(--fg-faint); }
+
+  /* — Barras — */
+  .mk-split { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+  @media (min-width: 900px) { .mk-split { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
+
+  .mk-bars__title { margin: 0 0 1.5rem; }
+  .mk-bars__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.15rem; }
+  .mk-bar {
+    display: grid;
+    grid-template-columns: minmax(7rem, 10rem) 1fr auto;
+    align-items: center;
+    gap: 1rem;
+  }
+  .mk-bar__label { font-size: 0.925rem; }
+  .mk-bar__track { height: 2px; background: var(--rule); }
+  .mk-bar__fill {
+    display: block;
+    width: var(--pct);
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left center;
+  }
+  .mk-bar__value { color: var(--fg-muted); }
+
+  .mk-note { display: grid; gap: 1.25rem; align-content: start; padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+  .mk-note__text { margin: 0; font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); line-height: 1.6; text-wrap: pretty; }
+  .mk-note__source { color: var(--fg-faint); }
+
+  /* — Servicios — */
+  .mk-serv { padding-block: clamp(5rem, 10vw, 10rem); }
+  .mk-serv__list { list-style: none; margin: 0; padding: 0; }
+  .serv {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--rule);
+  }
+  .serv:last-child { border-bottom: 1px solid var(--rule); }
+  @media (min-width: 900px) {
+    .serv { grid-template-columns: 4rem minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 2.5rem; align-items: start; }
+  }
+  .serv__index { color: var(--fg-faint); padding-top: 0.5rem; }
+  .serv__title { margin: 0 0 0.75rem; font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.5rem); }
+  .serv__body { margin: 0; max-width: 48ch; line-height: 1.65; color: var(--fg-muted); text-wrap: pretty; }
+  .serv__includes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-top: 0.5rem;
+  }
+  .serv__includes li {
+    display: flex;
+    gap: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .serv__includes li::before { content: '—'; color: var(--accent); }
+
+  /* — Cómo trabajo — */
+  .mk-how { padding-block: clamp(5rem, 10vw, 10rem); }
+  .mk-how__grid { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+  @media (min-width: 950px) {
+    .mk-how__grid { grid-template-columns: 0.8fr 1.2fr; align-items: start; gap: clamp(3rem, 6vw, 6rem); }
+  }
+  .mk-how__title { margin: 1rem 0 2rem; }
+  .mk-how__title em { font-style: italic; color: var(--accent); }
+  .mk-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; counter-reset: step; }
+  .mk-steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-top: 1px solid var(--rule);
+    line-height: 1.6;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
+  .mk-steps li::before {
+    content: '0' counter(step);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.15em;
+    color: var(--fg-faint);
+    padding-top: 0.4em;
+  }
+  .mk-steps strong { color: var(--fg); font-weight: 500; }
+
+  /* — Cierre — */
+  .mk-cta { padding-block: clamp(4rem, 9vw, 8rem); }
+  .mk-cta__inner { display: grid; gap: 2.5rem; justify-items: start; padding-top: clamp(3rem, 7vw, 6rem); }
+  .mk-cta__title { margin: 0; }
+  .mk-cta__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+</style>

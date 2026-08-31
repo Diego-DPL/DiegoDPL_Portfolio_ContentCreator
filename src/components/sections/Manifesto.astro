@@ -1,0 +1,96 @@
+---
+import { manifesto } from '~/data/site';
+import SplitText from '~/components/SplitText.astro';
+---
+
+<section class="mf" id="manifiesto" data-tone="day">
+  <div class="shell">
+    <header class="mf__head">
+      <p class="kicker" data-reveal>01 — El camino</p>
+      <span class="mf__rule" data-reveal="line"></span>
+    </header>
+
+    <!-- El texto se enfoca palabra a palabra mientras bajas: el polvo se posa -->
+    <SplitText
+      text={manifesto.statement}
+      as="p"
+      mode="scrub"
+      class="mf__statement display"
+    />
+
+    <ol class="mf__acts">
+      {
+        manifesto.acts.map((act, i) => (
+          <li class="mf__act" data-reveal style={`--rv-delay:${i * 120}ms`}>
+            <span class="mf__act-index display">{act.index}</span>
+            <h3 class="mf__act-title">{act.title}</h3>
+            <p class="mf__act-body">{act.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .mf { padding-block: clamp(6rem, 14vw, 14rem); }
+
+  .mf__head {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: clamp(3rem, 8vw, 7rem);
+  }
+  .mf__rule {
+    flex: 1;
+    height: 1px;
+  }
+
+  /* :global() porque el scope de Astro no llega a la raíz de <SplitText> */
+  .mf :global(.mf__statement) {
+    margin: 0;
+    max-width: 22ch;
+    font-size: clamp(2rem, 1.1rem + 4.6vw, 5.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  .mf__acts {
+    list-style: none;
+    margin: clamp(4rem, 10vw, 9rem) 0 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+  @media (min-width: 860px) {
+    .mf__acts { grid-template-columns: repeat(3, 1fr); gap: clamp(2rem, 4vw, 4.5rem); }
+  }
+
+  .mf__act {
+    display: grid;
+    gap: 0.85rem;
+    align-content: start;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+  .mf__act-index {
+    font-size: 2.25rem;
+    line-height: 1;
+    font-style: italic;
+    color: var(--accent);
+  }
+  .mf__act-title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .mf__act-body {
+    margin: 0;
+    font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.075rem);
+    line-height: 1.6;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+/** Cinta que se desplaza sola y acelera con el scroll. */
+interface Props {
+  items: readonly string[];
+  speed?: number;
+  dir?: 'left' | 'right';
+  class?: string;
+}
+const { items, speed = 0.45, dir = 'left', class: className = '' } = Astro.props;
+// Se duplica para que el bucle no tenga costura visible
+const runs = [0, 1, 2];
+---
+
+<div
+  class:list={['marquee-wrap', className]}
+  data-marquee
+  data-marquee-speed={speed}
+  data-marquee-dir={dir}
+  aria-hidden="true"
+>
+  <div class="marquee">
+    {
+      runs.map(() => (
+        <div class="marquee__item">
+          {items.map((item) => (
+            <>
+              <span>{item}</span>
+              <span class="marquee__dot">✦</span>
+            </>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee-wrap { overflow: hidden; width: 100%; }
+  .marquee__item {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1rem + 3.6vw, 4.5rem);
+    line-height: 1.1;
+    color: var(--fg);
+  }
+  .marquee__dot {
+    font-size: 0.35em;
+    color: var(--color-ochre);
+    transform: translateY(-0.35em);
+  }
+</style>

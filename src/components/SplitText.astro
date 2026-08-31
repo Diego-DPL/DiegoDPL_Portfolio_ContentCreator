@@ -1,0 +1,54 @@
+---
+/**
+ * TEXTO QUE EMERGE DEL POLVO
+ * --------------------------
+ * Parte el texto en palabras (o letras) en tiempo de compilación, no en el
+ * navegador: así no hay parpadeo ni salto de maquetación, y sin JavaScript
+ * el texto se lee entero y normal.
+ *
+ *   mode="reveal" → aparece de golpe con retardo escalonado (CSS)
+ *   mode="scrub"  → cada palabra se enfoca conforme haces scroll (GSAP)
+ */
+interface Props {
+  text: string;
+  as?: keyof HTMLElementTagNameMap;
+  unit?: 'words' | 'chars';
+  mode?: 'reveal' | 'scrub';
+  /** Milisegundos entre unidad y unidad (sólo en mode="reveal") */
+  stagger?: number;
+  /** Retardo inicial en milisegundos */
+  delay?: number;
+  class?: string;
+}
+
+const {
+  text,
+  as: Tag = 'p',
+  unit = 'words',
+  mode = 'reveal',
+  stagger = 34,
+  delay = 0,
+  class: className = '',
+} = Astro.props;
+
+const pieces = unit === 'chars' ? Array.from(text) : text.split(/(\s+)/);
+let i = 0;
+---
+
+<Tag
+  class:list={[className]}
+  data-split={mode === 'scrub' ? 'scrub' : unit}
+  aria-label={text}
+>
+  {
+    pieces.map((piece) => {
+      if (/^\s+$/.test(piece)) return <Fragment>{piece}</Fragment>;
+      const d = delay + i++ * stagger;
+      return (
+        <span class="split-unit" style={`--d:${d}ms`} aria-hidden="true">
+          {piece}
+        </span>
+      );
+    })
+  }
+</Tag>

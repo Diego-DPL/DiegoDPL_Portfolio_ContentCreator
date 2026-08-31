@@ -1,0 +1,119 @@
+---
+import { site } from '~/data/site';
+import DustFrame from '~/components/DustFrame.astro';
+import casaSierra from '~/assets/media/casa-sierra.jpg';
+
+const ficha = [
+  { label: 'Base', value: site.location },
+  { label: 'Disciplinas', value: 'Dirección · Foto · Edición' },
+  { label: 'Idiomas', value: site.languages.join(' · ') },
+  { label: 'Estética', value: 'Documental analógica' },
+];
+---
+
+<section class="about" id="sobre-mi" data-tone="day">
+  <div class="shell about__grid">
+    <div class="about__media">
+      <DustFrame
+        src={casaSierra}
+        alt="Diego DPL sentado en el umbral de una casa abandonada en la sierra, al atardecer"
+        format="tall"
+        sizes="(min-width: 950px) 42vw, 100vw"
+        position="50% 58%"
+        seed={11}
+      />
+      <p class="about__caption kicker">
+        {site.coords} — a la hora en que todavía no hay nadie
+      </p>
+    </div>
+
+    <div class="about__text">
+      <p class="kicker" data-reveal>03 — Sobre mí</p>
+
+      <h2 class="about__title display t-lg" data-reveal style="--rv-delay:.08s">
+        No hago contenido<br />sobre correr.<br />
+        <em>Hago contenido sobre insistir.</em>
+      </h2>
+
+      <div class="about__prose" data-reveal style="--rv-delay:.16s">
+        <p>
+          Me llamo Diego. Vivo en Murcia, corro casi todos los días y llevo una
+          cámara conmigo desde antes de saber para qué. Durante años hice música;
+          aprendí ahí lo único que me ha servido después: que nada bueno sale a la
+          primera y que el trabajo que nadie ve es el que decide.
+        </p>
+        <p>
+          Ahora ruedo lo que conozco. Carreteras vacías, luz dura de mediodía,
+          gente que sigue cuando ya no le apetece. Grabo con la estética con la
+          que veo: grano, color cálido, encuadres que respiran. Nada de brillo
+          falso — si el sudor está, se ve.
+        </p>
+        <p>
+          Trabajo con marcas que entienden que la confianza de una audiencia no
+          se alquila por una publicación. Se construye igual que todo lo demás:
+          apareciendo, otra vez, al día siguiente.
+        </p>
+      </div>
+
+      <dl class="about__ficha" data-reveal style="--rv-delay:.24s">
+        {
+          ficha.map((f) => (
+            <div class="about__ficha-row">
+              <dt class="kicker">{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about { padding-block: clamp(6rem, 13vw, 13rem); }
+
+  .about__grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+  @media (min-width: 950px) {
+    .about__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      align-items: start;
+      gap: clamp(3rem, 6vw, 7rem);
+    }
+    .about__media { position: sticky; top: 12vh; }
+  }
+
+  .about__caption { margin: 1rem 0 0; color: var(--fg-faint); }
+
+  .about__text { display: grid; gap: 1.75rem; align-content: start; }
+
+  .about__title { margin: 0; }
+  .about__title em { font-style: italic; color: var(--accent); }
+
+  .about__prose { display: grid; gap: 1.15rem; max-width: 56ch; }
+  .about__prose p {
+    margin: 0;
+    font-size: clamp(1rem, 0.94rem + 0.28vw, 1.125rem);
+    line-height: 1.68;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
+
+  .about__ficha {
+    margin: 1rem 0 0;
+    display: grid;
+    gap: 0;
+    max-width: 34rem;
+  }
+  .about__ficha-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 0.85rem;
+    border-top: 1px solid var(--rule);
+  }
+  .about__ficha-row dd { margin: 0; font-size: 0.95rem; text-align: right; }
+</style>

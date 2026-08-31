@@ -1,0 +1,180 @@
+---
+import { work } from '~/data/site';
+import DustFrame from '~/components/DustFrame.astro';
+---
+
+<section class="rail" id="trabajo" data-tone="night" data-rail>
+  <div class="rail__viewport">
+    <div class="rail__track" data-rail-track>
+      <!-- Panel de entrada -->
+      <div class="rail__intro">
+        <p class="kicker" data-reveal>02 — Trabajo</p>
+        <h2 class="rail__title display t-xl" data-reveal style="--rv-delay:.1s">
+          Lo que<br /><em>he rodado</em>
+        </h2>
+        <p class="lede rail__lede" data-reveal style="--rv-delay:.2s">
+          Encuadres reales, sin producción ni equipo. Esto es lo que sé hacer
+          y así es como se ve.
+        </p>
+        <p class="kicker rail__hint" data-reveal style="--rv-delay:.3s">
+          <span class="rail__hint-arrow" aria-hidden="true">→</span> Sigue bajando
+        </p>
+      </div>
+
+      <!-- Las piezas -->
+      {
+        work.map((item, i) => (
+          <article class="card" data-rail-item data-format={item.format} data-cursor="grow">
+            <div class="card__media">
+              <DustFrame
+                src={item.image}
+                alt={`${item.title} — ${item.client}`}
+                format={item.format}
+                label={item.title}
+                position={item.position ?? '50% 50%'}
+                sizes="(min-width: 900px) 30vw, 100vw"
+                seed={i + 2}
+              />
+              <span class="card__index kicker">{String(i + 1).padStart(2, '0')}</span>
+            </div>
+
+            <div class="card__body">
+              <h3 class="card__title display">{item.title}</h3>
+              <p class="card__caption">{item.caption}</p>
+              <ul class="card__tags">
+                {item.capability.map((c) => (
+                  <li class="card__tag">{c}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+
+      <!-- Panel de salida -->
+      <div class="rail__outro">
+        <p class="rail__outro-text display t-lg">
+          ¿Y lo<br /><em>siguiente?</em>
+        </p>
+        <a href="#contacto" class="btn" data-magnetic>
+          Cuéntame la idea
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rail { position: relative; }
+  .rail__viewport { overflow: clip; }
+
+  .rail__track {
+    display: grid;
+    gap: clamp(3rem, 8vw, 6rem);
+    padding: clamp(4.5rem, 10vw, 8rem) 0;
+    padding-inline: clamp(1.25rem, 0.6rem + 3vw, 5rem);
+  }
+
+  /* — Paneles de texto — */
+  .rail__intro,
+  .rail__outro {
+    display: grid;
+    align-content: center;
+    gap: 1.25rem;
+  }
+  .rail__title { margin: 0; }
+  .rail__title em { font-style: italic; color: var(--color-ochre); }
+  .rail__lede { max-width: 30ch; margin: 0; }
+  .rail__hint { display: flex; align-items: center; gap: 0.6rem; }
+  .rail__hint-arrow { display: none; }
+
+  .rail__outro { gap: 2rem; justify-items: start; }
+  .rail__outro-text { margin: 0; }
+  .rail__outro-text em { font-style: italic; color: var(--color-ochre); }
+
+  /* — Tarjeta — */
+  .card { display: grid; gap: 1.5rem; align-content: start; }
+
+  .card__media { position: relative; }
+  .card__index {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-ink-900) 65%, transparent);
+    backdrop-filter: blur(6px);
+    color: var(--color-sand-100);
+  }
+  .card :global(.frame) { transition: filter 0.8s var(--ease-dust); }
+  .card:hover :global(.frame) { filter: brightness(1.08) saturate(1.05); }
+
+  .card__body { display: grid; gap: 0.7rem; }
+  .card__title {
+    margin: 0;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.4rem);
+  }
+  .card__caption {
+    margin: 0;
+    max-width: 42ch;
+    font-size: 0.975rem;
+    line-height: 1.6;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
+  .card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+  }
+  .card__tag {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  /* ============================================================
+     ESCRITORIO: el carril se ancla y desfila lateralmente.
+     GSAP sólo lo activa a partir de 900px (ver main.ts).
+     ============================================================ */
+  @media (min-width: 900px) {
+    .rail__track {
+      display: flex;
+      align-items: center;
+      gap: clamp(2.5rem, 4vw, 5rem);
+      height: 100svh;
+      padding-block: 0;
+      padding-right: 18vw;
+      width: max-content;
+      will-change: transform;
+    }
+
+    .rail__intro,
+    .rail__outro {
+      flex: 0 0 auto;
+      width: min(34vw, 30rem);
+    }
+    .rail__hint-arrow { display: inline; color: var(--color-ochre); }
+
+    .card {
+      flex: 0 0 auto;
+      width: min(30vw, 28rem);
+      will-change: transform;
+    }
+    /* Las verticales son más estrechas; las apaisadas, más anchas */
+    .card[data-format='portrait'] { width: min(24vw, 22rem); }
+    .card[data-format='square'] { width: min(26vw, 24rem); }
+  }
+</style>
