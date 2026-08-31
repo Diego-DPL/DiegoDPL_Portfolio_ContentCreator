@@ -5,10 +5,16 @@ import retrato from '~/assets/media/diego-super8.jpg';
 ---
 
 <section class="hero" data-tone="night" data-hero>
-  <div class="hero__grid shell">
+  <!--
+    Ficha de cabecera. Va fuera de la rejilla y anclada bajo el menú: dentro
+    quedaba centrada con el resto y en portátil se metía detrás de la foto.
+  -->
+  <div class="hero__meta shell">
     <p class="kicker hero__tag" data-hero-fade>{site.role}</p>
     <p class="kicker hero__coords" data-hero-fade>{site.coords}</p>
+  </div>
 
+  <div class="hero__grid shell">
     <h1 class="hero__title display t-hero" data-hero-title>
       <span class="hero__line hero__line--a">Diego</span>
       <span class="hero__line hero__line--b">DPL</span>
@@ -61,13 +67,24 @@ import retrato from '~/assets/media/diego-super8.jpg';
     z-index: 2;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr auto;
     align-items: end;
     row-gap: clamp(1.5rem, 4vw, 3rem);
   }
 
-  .hero__tag { grid-column: 1; justify-self: start; }
-  .hero__coords { grid-column: 2; justify-self: end; text-align: right; }
+  .hero__meta {
+    position: absolute;
+    top: clamp(4.75rem, 4rem + 3vw, 6.5rem);
+    left: 0;
+    right: 0;
+    z-index: 3; /* por encima del retrato */
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .hero__tag,
+  .hero__coords { margin: 0; }
+  .hero__coords { text-align: right; }
 
   .hero__title {
     grid-column: 1 / -1;
@@ -203,8 +220,9 @@ import retrato from '~/assets/media/diego-super8.jpg';
       width: clamp(16rem, 27vw, 25rem);
       /* Centrado vertical con sesgo hacia arriba. Nada de translate: el
          parallax de GSAP escribe en transform y se pisarían. */
-      /* el 'top' hace de suelo: nunca se mete debajo del menú */
-      top: clamp(5rem, 11vh, 7rem);
+      /* el 'top' hace de suelo: la foto nunca sube hasta la ficha de
+         cabecera, ni siquiera en un portátil con la barra del navegador */
+      top: clamp(9rem, 14vh, 11rem);
       bottom: clamp(4rem, 14vh, 9rem);
       margin-block: auto;
       height: max-content;
