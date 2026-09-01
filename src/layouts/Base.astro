@@ -13,6 +13,10 @@ interface Props {
   schema?: Record<string, unknown>[];
   /** Imagen al compartir. Ruta en /public o imagen importada. */
   image?: string | { src: string };
+  /** Idioma de la página */
+  lang?: 'es' | 'en';
+  /** Versiones en otros idiomas de ESTA página, para hreflang */
+  alternates?: { hreflang: string; href: string }[];
 }
 
 const {
@@ -21,6 +25,8 @@ const {
   preload = true,
   schema = [],
   image = '/og.jpg',
+  lang = 'es',
+  alternates = [],
 } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
@@ -51,7 +57,7 @@ const jsonLd = {
       '@id': `${site.url}/#web`,
       url: site.url,
       name: site.name,
-      inLanguage: 'es-ES',
+      inLanguage: lang === 'en' ? 'en-GB' : 'es-ES',
       publisher: { '@id': `${site.url}/#diego` },
     },
     ...schema,
@@ -60,7 +66,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang="es" class:list={[preload && 'is-loading']}>
+<html lang={lang} class:list={[preload && 'is-loading']}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -74,7 +80,12 @@ const jsonLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'es_ES'} />
+    {
+      alternates.map((a) => (
+        <link rel="alternate" hreflang={a.hreflang} href={a.href} />
+      ))
+    }
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -145,13 +156,13 @@ const jsonLd = {
 
     <a href="#main" class="skip">Saltar al contenido</a>
 
-    <Nav />
+    <Nav lang={lang} />
 
     <main id="main">
       <slot />
     </main>
 
-    <Footer />
+    <Footer lang={lang} />
 
     <script>
       import '~/scripts/main';

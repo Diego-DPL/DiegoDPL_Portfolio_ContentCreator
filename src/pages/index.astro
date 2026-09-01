@@ -8,9 +8,18 @@ import About from '~/components/sections/About.astro';
 import Numbers from '~/components/sections/Numbers.astro';
 import JournalTeaser from '~/components/sections/JournalTeaser.astro';
 import Contact from '~/components/sections/Contact.astro';
+import { site } from '~/data/site';
+
+// Las dos entradas al sitio, una por idioma. Sin esto Google puede tomar la
+// versión en inglés por contenido duplicado.
+const alternates = [
+  { hreflang: 'es', href: new URL('/', site.url).href },
+  { hreflang: 'en', href: new URL('/en/', site.url).href },
+  { hreflang: 'x-default', href: new URL('/', site.url).href },
+];
 ---
 
-<Base>
+<Base alternates={alternates}>
   <!--
     El orden es el del viaje: la llamada, el desierto, las pruebas,
     quién eres al volver, y la invitación a que alguien camine contigo.

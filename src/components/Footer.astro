@@ -1,5 +1,21 @@
 ---
 import { site, socials, nav } from '~/data/site';
+import { en } from '~/data/en';
+
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+
+const isEn = lang === 'en';
+const t = isEn
+  ? { ...en.footer, tagline: 'The road is made by kicking up dust.' }
+  : {
+      where: 'Dónde', index: 'Índice', follow: 'Seguir', write: 'Escribir',
+      made: 'Hecho con polvo y paciencia', by: 'Diseño y desarrollo por',
+      tagline: site.tagline,
+    };
+const items = isEn ? en.nav : nav;
 const year = new Date().getFullYear();
 ---
 
@@ -7,26 +23,26 @@ const year = new Date().getFullYear();
   <div class="shell">
     <div class="foot__top">
       <p class="foot__claim display t-lg" data-reveal>
-        {site.tagline}
+        {t.tagline}
       </p>
     </div>
 
     <div class="foot__grid rule-t">
       <div class="foot__col">
-        <p class="kicker">Dónde</p>
+        <p class="kicker">{t.where}</p>
         <p class="foot__val">{site.location}</p>
         <p class="foot__coords kicker">{site.coords}</p>
       </div>
 
       <div class="foot__col">
-        <p class="kicker">Índice</p>
+        <p class="kicker">{t.index}</p>
         <ul class="foot__list">
-          {nav.map((i) => <li><a href={i.href} class="link-dust">{i.label}</a></li>)}
+          {items.map((i) => <li><a href={i.href} class="link-dust">{i.label}</a></li>)}
         </ul>
       </div>
 
       <div class="foot__col">
-        <p class="kicker">Seguir</p>
+        <p class="kicker">{t.follow}</p>
         <ul class="foot__list">
           {
             socials.map((s) => (
@@ -41,16 +57,26 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="foot__col">
-        <p class="kicker">Escribir</p>
+        <p class="kicker">{t.write}</p>
         <a href={`mailto:${site.email}`} class="foot__mail link-dust">{site.email}</a>
+        <p class="kicker foot__lang">
+          <a
+            href={isEn ? '/' : '/en/'}
+            class="link-dust"
+            hreflang={isEn ? 'es' : 'en'}
+            lang={isEn ? 'es' : 'en'}
+          >
+            {isEn ? 'Español' : 'English'}
+          </a>
+        </p>
       </div>
     </div>
 
     <div class="foot__bottom rule-t">
       <p class="kicker">© {year} {site.name}</p>
-      <p class="kicker foot__made">Hecho con polvo y paciencia</p>
+      <p class="kicker foot__made">{t.made}</p>
       <p class="kicker">
-        Diseño y desarrollo por
+        {t.by}
         <a href="https://clickora.es" class="link-dust foot__by" rel="noopener">Clickora</a>
       </p>
     </div>
@@ -79,6 +105,7 @@ const year = new Date().getFullYear();
   .foot__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
   .foot__list a, .foot__mail { font-size: 0.95rem; }
   .foot__mail { justify-self: start; }
+  .foot__lang { margin: 0.75rem 0 0; }
 
   .foot__bottom {
     display: flex;

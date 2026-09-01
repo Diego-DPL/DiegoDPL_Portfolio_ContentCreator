@@ -1,0 +1,482 @@
+---
+/**
+ * English landing for international brands and agencies.
+ *
+ * One self-contained page instead of a half-translated site: the pitch, the
+ * work, the numbers, what it costs to start and a form. Everything shared
+ * with the Spanish version — photos, metrics, social links — is imported,
+ * so there is only ever one place to update it.
+ */
+import Base from '~/layouts/Base.astro';
+import DustFrame from '~/components/DustFrame.astro';
+import Marquee from '~/components/Marquee.astro';
+import { site, work, metrics, audience, socials, contact } from '~/data/site';
+import { en } from '~/data/en';
+import retrato from '~/assets/media/diego-super8.jpg';
+import casaSierra from '~/assets/media/casa-sierra.jpg';
+
+const alternates = [
+  { hreflang: 'es', href: new URL('/', site.url).href },
+  { hreflang: 'en', href: new URL('/en/', site.url).href },
+  { hreflang: 'x-default', href: new URL('/', site.url).href },
+];
+
+const schema = [
+  ...en.services.map((s) => ({
+    '@type': 'Service',
+    name: s.title,
+    description: s.body,
+    serviceType: s.title,
+    provider: { '@id': `${site.url}/#diego` },
+    areaServed: { '@type': 'Country', name: 'Spain' },
+  })),
+  {
+    '@type': 'FAQPage',
+    mainEntity: en.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+
+const brandsEn = [
+  'Available for collaborations',
+  'Running',
+  'Outdoor',
+  'Travel',
+  'Lifestyle',
+  'Sports nutrition',
+  'Technical apparel',
+];
+---
+
+<Base
+  title={en.title}
+  description={en.description}
+  preload={false}
+  lang="en"
+  alternates={alternates}
+  schema={schema}
+  image="/og-media-kit.jpg"
+>
+  <!-- Opening -->
+  <section class="hd" data-tone="night">
+    <div class="shell hd__grid">
+      <div class="hd__text">
+        <p class="kicker">{en.role} · {en.location}</p>
+        <h1 class="hd__title display t-xl">
+          Diego<br /><em>DPL</em>
+        </h1>
+        <p class="lede hd__claim">{en.claim}</p>
+        <div class="hd__actions">
+          <a href="#contact" class="btn" data-magnetic>
+            Work with me <span aria-hidden="true">→</span>
+          </a>
+          <a href="/" class="btn btn--ghost" data-magnetic>Versión en español</a>
+        </div>
+      </div>
+
+      <div class="hd__media">
+        <DustFrame
+          src={retrato}
+          alt="Diego DPL shooting with a Super 8 camera on a clifftop"
+          format="portrait"
+          loading="eager"
+          sizes="(min-width: 900px) 32vw, 100vw"
+          position="52% 45%"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Who -->
+  <section class="who" id="who" data-tone="day">
+    <div class="shell who__grid">
+      <div class="who__media">
+        <DustFrame
+          src={casaSierra}
+          alt="Diego DPL sitting in the doorway of an abandoned house in the mountains at sunset"
+          format="tall"
+          sizes="(min-width: 950px) 40vw, 100vw"
+          position="50% 58%"
+        />
+      </div>
+      <div class="who__text">
+        <p class="kicker" data-reveal>01 — Who</p>
+        <h2 class="who__title display t-lg" data-reveal style="--rv-delay:.08s">
+          I do not make content<br />about running.<br />
+          <em>I make content about not stopping.</em>
+        </h2>
+        <div class="who__prose" data-reveal style="--rv-delay:.16s">
+          {en.intro.map((p) => <p>{p}</p>)}
+        </div>
+        <dl class="who__facts" data-reveal style="--rv-delay:.24s">
+          <div><dt class="kicker">Based in</dt><dd>{en.location}</dd></div>
+          <div><dt class="kicker">Disciplines</dt><dd>Direction · Photo · Edit</dd></div>
+          <div><dt class="kicker">Languages</dt><dd>Spanish · English</dd></div>
+          <div><dt class="kicker">Look</dt><dd>Documentary, film grain</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work -->
+  <section class="wk" id="work" data-tone="night">
+    <div class="shell">
+      <header class="hd2">
+        <p class="kicker" data-reveal>02 — Work</p>
+        <span class="rule" data-reveal="line"></span>
+      </header>
+      <p class="lede wk__lede" data-reveal>
+        Real frames, no production and no crew. This is what I can do and how it looks.
+      </p>
+
+      <ul class="wk__grid">
+        {
+          work.map((item, i) => (
+            <li class="wkc" data-reveal style={`--rv-delay:${(i % 3) * 80}ms`}>
+              <DustFrame
+                src={item.image}
+                alt={en.captions[i]?.title ?? item.title}
+                format={item.format}
+                position={item.position ?? '50% 50%'}
+                sizes="(min-width: 1100px) 30vw, (min-width: 720px) 45vw, 100vw"
+                seed={i + 2}
+              />
+              <h3 class="wkc__title display">{en.captions[i]?.title}</h3>
+              <p class="wkc__caption">{en.captions[i]?.caption}</p>
+              <ul class="wkc__tags">
+                {en.captions[i]?.capability.map((c) => <li>{c}</li>)}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Numbers -->
+  <section class="nm" id="audience" data-tone="day">
+    <div class="shell">
+      <header class="hd2">
+        <p class="kicker" data-reveal>03 — Audience</p>
+        <span class="rule" data-reveal="line"></span>
+      </header>
+
+      <ul class="nm__list">
+        {
+          metrics.map((m, i) => {
+            const decimals = Number.isInteger(m.value) ? 0 : 1;
+            return (
+              <li class="nm__item" data-reveal style={`--rv-delay:${i * 80}ms`}>
+                <p class="nm__value display">
+                  <span data-count={m.value} data-decimals={decimals}>0</span>
+                  {m.suffix && <span class="nm__suffix">{m.suffix}</span>}
+                </p>
+                <p class="nm__label">{en.metricLabels[i]}</p>
+                <p class="kicker nm__note">{en.metricNotes[i]}</p>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <div class="nm__split">
+        <div>
+          <p class="kicker nm__bars-title">{en.audienceTitle}</p>
+          <ul class="nm__bars">
+            {
+              audience.map((a, i) => (
+                <li class="bar">
+                  <span class="bar__label">{en.audienceLabels[i]}</span>
+                  <span class="bar__track">
+                    <span class="bar__fill" data-bar style={`--pct:${a.value}%`} />
+                  </span>
+                  <span class="bar__value kicker">{a.value}%</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="nm__note-block" data-reveal>
+          <p class="nm__note-text">{en.audienceNote}</p>
+          <p class="kicker nm__source">{en.audienceSource}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="sv" id="services" data-tone="night">
+    <div class="shell">
+      <header class="hd2">
+        <p class="kicker" data-reveal>04 — Services</p>
+        <span class="rule" data-reveal="line"></span>
+      </header>
+      <ul class="sv__list">
+        {
+          en.services.map((s, i) => (
+            <li class="sv__item" data-reveal style={`--rv-delay:${i * 60}ms`}>
+              <span class="kicker sv__index">{s.index}</span>
+              <div>
+                <h3 class="sv__title display">{s.title}</h3>
+                <p class="sv__body">{s.body}</p>
+              </div>
+              <ul class="sv__inc">
+                {s.includes.map((x) => <li>{x}</li>)}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="pr" data-tone="day">
+    <div class="shell">
+      <header class="hd2">
+        <p class="kicker" data-reveal>05 — How I work</p>
+        <span class="rule" data-reveal="line"></span>
+      </header>
+      <h2 class="pr__title display t-lg" data-reveal>{en.processTitle}</h2>
+      <ol class="pr__steps" data-reveal style="--rv-delay:.12s">
+        {en.process.map((s) => <li><span><strong>{s.k}</strong> {s.v}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="fq" data-tone="night">
+    <div class="shell">
+      <header class="hd2">
+        <p class="kicker" data-reveal>06 — Common questions</p>
+        <span class="rule" data-reveal="line"></span>
+      </header>
+      <ul class="fq__list">
+        {
+          en.faqs.map((f, i) => (
+            <li class="fq__item" data-reveal style={`--rv-delay:${i * 60}ms`}>
+              <h3 class="fq__q display">{f.q}</h3>
+              <p class="fq__a">{f.a}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="ct" id="contact" data-tone="day">
+    <Marquee items={brandsEn} speed={0.4} />
+    <div class="shell ct__inner">
+      <header class="ct__head">
+        <p class="kicker" data-reveal>07 — Contact</p>
+        <h2 class="ct__title display t-xl" data-reveal style="--rv-delay:.08s">
+          Let's<br /><em>start</em>
+        </h2>
+        <p class="lede ct__lede" data-reveal style="--rv-delay:.16s">
+          Tell me what you want to say. I read everything and reply within 48 hours,
+          even when the answer is that I am not the right person for it.
+        </p>
+      </header>
+
+      <div class="ct__grid">
+        <form
+          class="ct__form"
+          data-contact-form
+          data-access-key={contact.formAccessKey}
+          data-mailto={site.email}
+          data-msg-sending={en.form.sending}
+          data-msg-ok={en.form.ok}
+          data-msg-error={en.form.error}
+          data-msg-mailto={en.form.mailto}
+          action={contact.endpoint}
+          method="POST"
+          novalidate
+        >
+          {contact.formAccessKey && <input type="hidden" name="access_key" value={contact.formAccessKey} />}
+          <input type="hidden" name="from_name" value="diegodpl.com — EN" />
+          <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <div class="field"><label for="e-name">{en.form.name}</label>
+            <input id="e-name" name="name" type="text" required autocomplete="name" placeholder={en.form.namePh} /></div>
+          <div class="field"><label for="e-email">{en.form.email}</label>
+            <input id="e-email" name="email" type="email" required autocomplete="email" placeholder={en.form.emailPh} /></div>
+          <div class="field"><label for="e-co">{en.form.company}</label>
+            <input id="e-co" name="company" type="text" autocomplete="organization" placeholder={en.form.companyPh} /></div>
+
+          <div class="field field--half"><label for="e-subj">{en.form.subject}</label>
+            <select id="e-subj" name="subject" required>
+              <option value="" disabled selected>{en.form.choose}</option>
+              {en.form.subjects.map((s) => <option value={s}>{s}</option>)}
+            </select></div>
+          <div class="field field--half"><label for="e-bud">{en.form.budget}</label>
+            <select id="e-bud" name="budget">
+              <option value="" disabled selected>{en.form.choose}</option>
+              {en.form.budgets.map((b) => <option value={b}>{b}</option>)}
+            </select></div>
+
+          <div class="field"><label for="e-msg">{en.form.message}</label>
+            <textarea id="e-msg" name="message" rows="5" required placeholder={en.form.messagePh}></textarea></div>
+
+          <div class="ct__actions">
+            <button type="submit" class="btn" data-magnetic>{en.form.send} <span aria-hidden="true">→</span></button>
+            <p class="ct__status kicker" data-form-status role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <aside class="ct__aside">
+          <div class="ct__block"><p class="kicker">Direct</p>
+            <a href={`mailto:${site.email}`} class="ct__mail link-dust">{site.email}</a></div>
+          <div class="ct__block"><p class="kicker">Social</p>
+            <ul class="ct__socials">
+              {socials.map((s) => (
+                <li><a href={s.href} target="_blank" rel="me noopener" class="ct__social">
+                  <span class="link-dust">{s.label}</span>
+                  <span class="ct__handle kicker">{s.handle}</span></a></li>
+              ))}
+            </ul></div>
+          <div class="ct__block"><p class="kicker">Based in</p>
+            <p class="ct__where">{en.location}</p>
+            <p class="ct__where ct__where--faint">Available to travel. The further the better.</p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hd2 { display: flex; align-items: center; gap: 1.5rem; margin-bottom: clamp(2rem, 5vw, 4rem); }
+  .rule { flex: 1; min-height: 1px; }
+
+  /* — Opening — */
+  .hd { min-height: 92svh; display: flex; align-items: center; padding-block: 8rem clamp(3rem, 6vw, 5rem); }
+  .hd__grid { display: grid; gap: clamp(2.5rem, 6vw, 5rem); width: 100%; }
+  @media (min-width: 900px) {
+    .hd__grid { grid-template-columns: minmax(0, 1fr) clamp(15rem, 26vw, 23rem); align-items: center; }
+  }
+  .hd__text { display: grid; gap: 1.5rem; align-content: center; }
+  .hd__title { margin: 0.5rem 0 0; }
+  .hd__title em { font-style: italic; color: var(--color-ochre); margin-left: 0.22em; display: inline-block; }
+  .hd__claim { max-width: 34ch; margin: 0; }
+  .hd__actions { display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 0.5rem; }
+
+  /* — Who — */
+  .who { padding-block: clamp(5rem, 11vw, 11rem); }
+  .who__grid { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+  @media (min-width: 950px) {
+    .who__grid { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); align-items: start; }
+    .who__media { position: sticky; top: 12vh; }
+  }
+  .who__text { display: grid; gap: 1.75rem; align-content: start; }
+  .who__title { margin: 0; }
+  .who__title em { font-style: italic; color: var(--accent); }
+  .who__prose { display: grid; gap: 1.15rem; max-width: 56ch; }
+  .who__prose p { margin: 0; font-size: clamp(1rem, 0.94rem + 0.28vw, 1.125rem); line-height: 1.68; color: var(--fg-muted); text-wrap: pretty; }
+  .who__facts { margin: 1rem 0 0; display: grid; max-width: 34rem; }
+  .who__facts > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; padding-block: 0.85rem; border-top: 1px solid var(--rule); }
+  .who__facts dt, .who__facts dd { margin: 0; }
+  .who__facts dd { font-size: 0.95rem; text-align: right; }
+
+  /* — Work — */
+  .wk { padding-block: clamp(5rem, 11vw, 11rem); }
+  .wk__lede { max-width: 40ch; margin: 0 0 clamp(2.5rem, 5vw, 4rem); }
+  .wk__grid { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(2.5rem, 5vw, 3.5rem); }
+  @media (min-width: 720px) { .wk__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .wk__grid { grid-template-columns: repeat(3, 1fr); } }
+  .wkc { display: grid; gap: 0.7rem; align-content: start; }
+  .wkc__title { margin: 0.5rem 0 0; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.9rem); }
+  .wkc__caption { margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--fg-muted); text-wrap: pretty; }
+  .wkc__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; margin: 0.3rem 0 0; padding: 0; }
+  .wkc__tags li { padding: 0.35rem 0.75rem; border: 1px solid var(--rule); border-radius: 999px; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); }
+
+  /* — Numbers — */
+  .nm { padding-block: clamp(5rem, 10vw, 10rem); }
+  .nm__list { list-style: none; margin: 0 0 clamp(3rem, 7vw, 6rem); padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+  .nm__item { padding: 1.5rem 1rem 1.5rem 0; border-top: 1px solid var(--rule); }
+  @media (min-width: 640px) { .nm__item + .nm__item { padding-left: clamp(1rem, 2vw, 2rem); border-left: 1px solid var(--rule); } }
+  .nm__value { margin: 0; font-size: clamp(2.5rem, 1.5rem + 4vw, 5rem); line-height: 0.9; font-variant-numeric: tabular-nums; }
+  .nm__suffix { color: var(--accent); }
+  .nm__label { margin: 0.5rem 0 0.15rem; font-size: 0.95rem; }
+  .nm__note { color: var(--fg-faint); }
+
+  .nm__split { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+  @media (min-width: 900px) { .nm__split { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
+  .nm__bars-title { margin: 0 0 1.5rem; }
+  .nm__bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.15rem; }
+  .bar { display: grid; grid-template-columns: minmax(7rem, 10rem) 1fr auto; align-items: center; gap: 1rem; }
+  .bar__label { font-size: 0.925rem; }
+  .bar__track { height: 2px; background: var(--rule); }
+  .bar__fill { display: block; width: var(--pct); height: 100%; background: var(--accent); transform-origin: left center; }
+  .bar__value { color: var(--fg-muted); }
+  .nm__note-block { display: grid; gap: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+  .nm__note-text { margin: 0; font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); line-height: 1.6; text-wrap: pretty; }
+  .nm__source { color: var(--fg-faint); }
+
+  /* — Services — */
+  .sv { padding-block: clamp(5rem, 10vw, 10rem); }
+  .sv__list { list-style: none; margin: 0; padding: 0; }
+  .sv__item { display: grid; gap: 1rem; padding-block: clamp(2rem, 4vw, 3rem); border-top: 1px solid var(--rule); }
+  .sv__item:last-child { border-bottom: 1px solid var(--rule); }
+  @media (min-width: 900px) { .sv__item { grid-template-columns: 4rem minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 2.5rem; align-items: start; } }
+  .sv__index { color: var(--fg-faint); padding-top: 0.5rem; }
+  .sv__title { margin: 0 0 0.75rem; font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.5rem); }
+  .sv__body { margin: 0; max-width: 48ch; line-height: 1.65; color: var(--fg-muted); text-wrap: pretty; }
+  .sv__inc { list-style: none; margin: 0; padding: 0.5rem 0 0; display: grid; gap: 0.5rem; align-content: start; }
+  .sv__inc li { display: flex; gap: 0.65rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-muted); }
+  .sv__inc li::before { content: '—'; color: var(--accent); }
+
+  /* — Process — */
+  .pr { padding-block: clamp(5rem, 10vw, 10rem); }
+  .pr__title { margin: 0 0 2rem; max-width: 18ch; }
+  .pr__steps { margin: 0; padding: 0; list-style: none; counter-reset: step; max-width: 60rem; }
+  .pr__steps li { counter-increment: step; display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; padding-block: 1rem; border-top: 1px solid var(--rule); line-height: 1.6; color: var(--fg-muted); text-wrap: pretty; }
+  .pr__steps li::before { content: '0' counter(step); font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.15em; color: var(--fg-faint); padding-top: 0.4em; }
+  .pr__steps strong { color: var(--fg); font-weight: 500; }
+
+  /* — FAQ — */
+  .fq { padding-block: clamp(5rem, 10vw, 10rem); }
+  .fq__list { list-style: none; margin: 0; padding: 0; }
+  .fq__item { display: grid; gap: 0.75rem; padding-block: clamp(1.5rem, 3vw, 2.25rem); border-top: 1px solid var(--rule); }
+  .fq__item:last-child { border-bottom: 1px solid var(--rule); }
+  @media (min-width: 900px) { .fq__item { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 2.5rem; align-items: start; } }
+  .fq__q { margin: 0; font-size: clamp(1.35rem, 1.15rem + 0.9vw, 2rem); line-height: 1.1; text-wrap: balance; }
+  .fq__a { margin: 0; max-width: 52ch; line-height: 1.65; color: var(--fg-muted); text-wrap: pretty; }
+
+  /* — Contact — */
+  .ct { padding-block: clamp(4rem, 9vw, 8rem); }
+  .ct__inner { padding-top: clamp(3rem, 7vw, 6rem); }
+  .ct__head { max-width: 44ch; margin-bottom: clamp(3rem, 7vw, 5rem); display: grid; gap: 1.25rem; }
+  .ct__title { margin: 0; }
+  .ct__title em { font-style: italic; color: var(--accent); }
+  .ct__lede { margin: 0; }
+  .ct__grid { display: grid; gap: clamp(3rem, 6vw, 5rem); }
+  @media (min-width: 950px) { .ct__grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr); } }
+
+  .ct__form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field { grid-column: 1 / -1; display: grid; gap: 0.5rem; padding-block: 1.15rem; border-top: 1px solid var(--rule); }
+  @media (min-width: 620px) { .field--half { grid-column: span 1; } .field--half + .field--half { padding-left: 1.5rem; border-left: 1px solid var(--rule); } }
+  .field label { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-muted); }
+  .field input, .field select, .field textarea { width: 100%; padding: 0.35rem 0; border: 0; background: transparent; color: var(--fg); font-family: var(--font-sans); font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem); line-height: 1.5; resize: vertical; border-radius: 0; }
+  .field select { appearance: none; cursor: pointer; }
+  .field option { background: var(--bg-raised); color: var(--fg); }
+  .field input::placeholder, .field textarea::placeholder { color: var(--fg-faint); }
+  .field:focus-within { border-top-color: var(--accent); }
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: none; }
+  .field:focus-within label { color: var(--accent); }
+  .ct__actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
+  .ct__status { margin: 0; }
+  .ct__status[data-kind='ok'] { color: var(--accent); }
+  .ct__status[data-kind='error'] { color: var(--color-rust); }
+
+  .ct__aside { display: grid; gap: 2.5rem; align-content: start; }
+  .ct__block { display: grid; gap: 0.85rem; padding-top: 1.15rem; border-top: 1px solid var(--rule); }
+  .ct__mail { justify-self: start; font-size: clamp(1rem, 0.9rem + 0.4vw, 1.2rem); }
+  .ct__socials { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
+  .ct__social { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .ct__handle { color: var(--fg-faint); }
+  .ct__where { margin: 0; font-size: 0.95rem; }
+  .ct__where--faint { color: var(--fg-muted); }
+</style>

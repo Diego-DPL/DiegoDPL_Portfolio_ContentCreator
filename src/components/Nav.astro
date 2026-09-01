@@ -1,5 +1,19 @@
 ---
 import { nav, site } from '~/data/site';
+import { en } from '~/data/en';
+
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+
+// El menú de la página en inglés apunta a sus propias secciones; el enlace
+// de idioma lleva siempre a la otra versión.
+const items = lang === 'en' ? en.nav : nav;
+const otro = lang === 'en'
+  ? { href: '/', label: 'ES', lang: 'es', title: 'Versión en español' }
+  : { href: '/en/', label: 'EN', lang: 'en', title: 'English version' };
+
 const path = Astro.url.pathname;
 ---
 
@@ -7,12 +21,12 @@ const path = Astro.url.pathname;
   <div class="nav__inner shell">
     <a href="/" class="nav__mark" aria-label={`${site.name} — inicio`}>
       <span class="nav__mark-name">Diego DPL</span>
-      <span class="nav__mark-role kicker">{site.role}</span>
+      <span class="nav__mark-role kicker">{lang === 'en' ? en.role : site.role}</span>
     </a>
 
-    <nav class="nav__links" aria-label="Principal">
+    <nav class="nav__links" aria-label={lang === 'en' ? 'Main' : 'Principal'}>
       {
-        nav.map((item) => (
+        items.map((item) => (
           <a
             href={item.href}
             class="nav__link"
@@ -23,10 +37,19 @@ const path = Astro.url.pathname;
           </a>
         ))
       }
+      <a
+        href={otro.href}
+        class="nav__lang"
+        hreflang={otro.lang}
+        lang={otro.lang}
+        aria-label={otro.title}
+      >
+        <span class="link-dust">{otro.label}</span>
+      </a>
     </nav>
 
     <button class="nav__burger" data-menu-toggle aria-expanded="false" aria-controls="menu">
-      <span class="sr-only">Abrir menú</span>
+      <span class="sr-only">{lang === 'en' ? 'Open menu' : 'Abrir menú'}</span>
       <span class="nav__burger-line"></span>
       <span class="nav__burger-line"></span>
     </button>
@@ -35,10 +58,10 @@ const path = Astro.url.pathname;
 
 <div class="menu" id="menu" data-menu data-tone="night">
   <div class="menu__inner shell">
-    <p class="kicker menu__label">Índice</p>
+    <p class="kicker menu__label">{lang === 'en' ? 'Index' : 'Índice'}</p>
     <ul class="menu__list">
       {
-        nav.map((item) => (
+        items.map((item) => (
           <li class="menu__item">
             <a href={item.href}>
               <span class="menu__index">{item.index}</span>
@@ -50,6 +73,9 @@ const path = Astro.url.pathname;
     </ul>
     <p class="menu__foot kicker">
       {site.coords} · {site.location}
+      <a href={otro.href} class="menu__lang link-dust" hreflang={otro.lang} lang={otro.lang}>
+        {otro.lang === 'en' ? 'English' : 'Español'}
+      </a>
     </p>
   </div>
 </div>
@@ -105,6 +131,15 @@ const path = Astro.url.pathname;
     opacity: 0.45;
   }
   .nav__link[aria-current='page'] { color: var(--color-ochre); }
+
+  .nav__lang {
+    margin-left: 0.5rem;
+    padding-left: clamp(1.25rem, 2.4vw, 2.5rem);
+    border-left: 1px solid color-mix(in oklab, currentColor 30%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
 
   .nav__burger {
     display: grid;
@@ -179,7 +214,8 @@ const path = Astro.url.pathname;
   }
   .menu__item a:hover .menu__text { color: var(--color-ochre); font-style: italic; }
 
-  .menu__foot { margin-top: 3.5rem; }
+  .menu__foot { margin-top: 3.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .menu__lang { color: var(--color-ochre); }
 
   :global(html.is-menu-open) { overflow: hidden; }
 </style>

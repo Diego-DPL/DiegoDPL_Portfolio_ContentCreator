@@ -35,6 +35,7 @@ ${services.map((s) => `- ${s.title}: ${s.body}`).join('\n')}
 - [Inicio](${base}/): portafolio, manifiesto y galería de encuadres.
 - [Media kit](${base}/media-kit): audiencia, servicios y forma de trabajar. Para marcas.
 - [Diario](${base}/diario): textos sobre entrenamiento, viajes y oficio.
+- [English](${base}/en/): full pitch in English for international brands and agencies.
 
 ## Diario
 ${posts.map((p) => `- [${p.data.title}](${base}/diario/${p.id}/): ${p.data.excerpt}`).join('\n')}

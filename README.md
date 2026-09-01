@@ -99,7 +99,25 @@ baja).
 > (`image: '/media/foto.jpg'`), pero entonces **no se optimiza**. Úsalo sólo
 > para pruebas rápidas.
 
-### SEO y visibilidad
+### Versión en inglés
+
+`/en/` es **una sola página** para marcas y agencias internacionales: quién
+eres, el trabajo, la audiencia, los servicios, cómo trabajas, dudas y
+formulario. No es una traducción del sitio entero, y es a propósito: una
+página buena convierte más que cinco a medias.
+
+- Los textos están en `src/data/en.ts`. Las fotos, métricas y redes se
+  importan de `site.ts`, así que **sólo se actualizan en un sitio**.
+- El menú y el pie cambian de idioma solos con la prop `lang` del layout.
+- `hreflang` enlaza `/` y `/en/` en ambas direcciones, con `x-default` al
+  español. Sin esto Google podría tomar una por copia de la otra.
+- El formulario es el mismo componente: los mensajes de estado ("Enviando…",
+  "Recibido") vienen de atributos `data-msg-*` del marcado, no del script.
+
+Si algún día quieres más páginas en inglés, el patrón ya está: `lang="en"`,
+`alternates` con su pareja, y los textos en `en.ts`.
+
+## SEO y visibilidad
 
 Lo que hay montado, para que sepas qué tocar:
 

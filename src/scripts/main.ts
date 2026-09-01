@@ -352,6 +352,15 @@ function initContactForm(): void {
   const key = form.dataset.accessKey ?? '';
   const endpoint = form.action;
 
+  // Los textos vienen del marcado para que la versión en inglés no necesite
+  // otra copia de esta función.
+  const t = {
+    sending: form.dataset.msgSending ?? 'Enviando…',
+    ok: form.dataset.msgOk ?? 'Recibido. Te contesto en menos de 48 horas.',
+    error: form.dataset.msgError ?? 'No se ha podido enviar. Escríbeme directamente por email.',
+    mailto: form.dataset.msgMailto ?? 'Abriendo tu cliente de correo…',
+  };
+
   const say = (message: string, kind: 'ok' | 'error' | 'busy'): void => {
     if (!status) return;
     status.textContent = message;
@@ -364,7 +373,7 @@ function initContactForm(): void {
     // Trampa para bots: si está relleno, fingimos éxito y no enviamos nada
     const honey = form.querySelector<HTMLInputElement>('input[name="botcheck"]');
     if (honey?.value) {
-      say('Mensaje enviado.', 'ok');
+      say(t.ok, 'ok');
       return;
     }
 
@@ -385,12 +394,12 @@ function initContactForm(): void {
           `${data.get('message')}`,
       );
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-      say('Abriendo tu cliente de correo…', 'ok');
+      say(t.mailto, 'ok');
       return;
     }
 
     submit?.setAttribute('disabled', 'true');
-    say('Enviando…', 'busy');
+    say(t.sending, 'busy');
 
     try {
       const res = await fetch(endpoint, {
@@ -402,12 +411,12 @@ function initContactForm(): void {
 
       if (res.ok && json.success) {
         form.reset();
-        say('Recibido. Te contesto en menos de 48 horas.', 'ok');
+        say(t.ok, 'ok');
       } else {
-        say('No se ha podido enviar. Escríbeme directamente por email.', 'error');
+        say(t.error, 'error');
       }
     } catch {
-      say('Fallo de conexión. Escríbeme directamente por email.', 'error');
+      say(t.error, 'error');
     } finally {
       submit?.removeAttribute('disabled');
     }
