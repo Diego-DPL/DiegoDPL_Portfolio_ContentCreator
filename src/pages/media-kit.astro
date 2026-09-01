@@ -2,9 +2,26 @@
 import Base from '~/layouts/Base.astro';
 import Marquee from '~/components/Marquee.astro';
 import DustFrame from '~/components/DustFrame.astro';
-import { site, metrics, audience, services, brands } from '~/data/site';
+import { site, metrics, audience, services, brands, faqs } from '~/data/site';
 import cenital from '~/assets/media/cenital.jpg';
 const schema = [
+  // Cada servicio como Service, para que Google sepa que ofreces esto
+  ...services.map((s) => ({
+    '@type': 'Service',
+    name: s.title,
+    description: s.body,
+    serviceType: s.title,
+    provider: { '@id': `${site.url}/#diego` },
+    areaServed: { '@type': 'Country', name: 'España' },
+  })),
+  {
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
   {
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -20,6 +37,7 @@ const schema = [
   description="Media kit de Diego DPL: audiencia, alcance y servicios de creación de contenido para marcas de running, outdoor, viajes y lifestyle."
   preload={false}
   schema={schema}
+  image="/og-media-kit.jpg"
 >
   <!-- Portada -->
   <section class="mk-hero" data-tone="night">
@@ -154,8 +172,29 @@ const schema = [
     </div>
   </section>
 
+  <!-- Preguntas frecuentes -->
+  <section class="mk-faq" data-tone="night">
+    <div class="shell">
+      <header class="mk-head">
+        <p class="kicker" data-reveal>04 — Dudas habituales</p>
+        <span class="mk-rule" data-reveal="line"></span>
+      </header>
+
+      <ul class="mk-faq__list">
+        {
+          faqs.map((f, i) => (
+            <li class="faq" data-reveal style={`--rv-delay:${i * 60}ms`}>
+              <h2 class="faq__q display">{f.q}</h2>
+              <p class="faq__a">{f.a}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
   <!-- Cierre -->
-  <section class="mk-cta" data-tone="night">
+  <section class="mk-cta" data-tone="day">
     <Marquee items={brands} speed={0.4} dir="right" />
     <div class="shell mk-cta__inner">
       <h2 class="mk-cta__title display t-xl" data-reveal>
@@ -303,6 +342,33 @@ const schema = [
     padding-top: 0.4em;
   }
   .mk-steps strong { color: var(--fg); font-weight: 500; }
+
+  /* — Preguntas — */
+  .mk-faq { padding-block: clamp(5rem, 10vw, 10rem); }
+  .mk-faq__list { list-style: none; margin: 0; padding: 0; }
+  .faq {
+    display: grid;
+    gap: 0.75rem;
+    padding-block: clamp(1.5rem, 3vw, 2.25rem);
+    border-top: 1px solid var(--rule);
+  }
+  .faq:last-child { border-bottom: 1px solid var(--rule); }
+  @media (min-width: 900px) {
+    .faq { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 2.5rem; align-items: start; }
+  }
+  .faq__q {
+    margin: 0;
+    font-size: clamp(1.35rem, 1.15rem + 0.9vw, 2rem);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  .faq__a {
+    margin: 0;
+    max-width: 52ch;
+    line-height: 1.65;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
 
   /* — Cierre — */
   .mk-cta { padding-block: clamp(4rem, 9vw, 8rem); }

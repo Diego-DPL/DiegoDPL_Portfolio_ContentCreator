@@ -249,6 +249,36 @@ export const services: Service[] = [
   },
 ];
 
+/**
+ * PREGUNTAS FRECUENTES
+ * --------------------
+ * Están escritas a propósito sin cifras ni plazos concretos: describen cómo
+ * trabajas, no te comprometen a nada. Repásalas, y si prefieres dar precios
+ * o tiempos de entrega cerrados, cámbialas — pero entonces cúmplelos.
+ */
+export const faqs = [
+  {
+    q: '¿Quién rueda y edita?',
+    a: 'Yo. De la idea al máster: concepto, rodaje, edición y color. No hay equipo intermedio ni subcontratas, así que hablas siempre con la persona que hace el trabajo.',
+  },
+  {
+    q: '¿Cuánto cuesta una colaboración?',
+    a: 'Depende del alcance: no es lo mismo una pieza suelta que una campaña con varias entregas. Cuéntame qué necesitas y te paso un presupuesto cerrado, sin extras a mitad de camino.',
+  },
+  {
+    q: '¿Puedo usar el contenido en publicidad de pago?',
+    a: 'Sí, si lo acordamos antes. Los derechos de uso se cierran por escrito en el presupuesto: dónde se publica, durante cuánto tiempo y en qué formatos. Nada de zonas grises.',
+  },
+  {
+    q: '¿Viajas para rodar?',
+    a: 'Sí, y cuanto más lejos mejor. Trabajo desde Murcia pero me muevo por toda España y fuera. Los gastos de desplazamiento van desglosados aparte en el presupuesto.',
+  },
+  {
+    q: '¿Qué me entregas al final?',
+    a: 'El máster en horizontal, las versiones verticales para redes, las fotos seleccionadas y el texto de publicación. Todo listo para subir, no material en bruto para que lo edite otro.',
+  },
+] as const;
+
 /** Marcas con las que has colaborado. Se muestran como marquesina. */
 export const brands = [
   'Disponible para colaboraciones',

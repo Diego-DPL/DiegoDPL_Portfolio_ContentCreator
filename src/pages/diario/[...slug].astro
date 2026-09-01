@@ -26,7 +26,9 @@ const fmt = (d: Date) =>
    con fecha y autor, y dónde encaja dentro del sitio. */
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const cover = post.data.cover;
-const imagen = cover ? new URL(cover.src, site.url).href : new URL('/og.jpg', site.url).href;
+// Al compartir una entrada sale su portada; si aún no tiene, la del diario
+const imagenSocial = cover ? cover.src : '/og-diario.jpg';
+const imagen = new URL(imagenSocial, site.url).href;
 
 const schema = [
   {
@@ -55,7 +57,13 @@ const schema = [
 ];
 ---
 
-<Base title={post.data.title} description={post.data.excerpt} preload={false} schema={schema}>
+<Base
+  title={post.data.title}
+  description={post.data.excerpt}
+  preload={false}
+  schema={schema}
+  image={imagenSocial}
+>
   <article>
     <header class="po-hero" data-tone="night">
       <div class="shell">

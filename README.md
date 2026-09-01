@@ -99,7 +99,36 @@ baja).
 > (`image: '/media/foto.jpg'`), pero entonces **no se optimiza**. Úsalo sólo
 > para pruebas rápidas.
 
-### Publicar en Vercel
+### SEO y visibilidad
+
+Lo que hay montado, para que sepas qué tocar:
+
+| Qué | Dónde | Se actualiza |
+| --- | --- | --- |
+| Datos estructurados | `src/layouts/Base.astro` + cada página | Solos |
+| Sitemap con fechas y prioridades | `astro.config.mjs` | Solo, leyendo el frontmatter del diario |
+| `robots.txt` | `public/robots.txt` | A mano |
+| `llms.txt` | `src/pages/llms.txt.ts` | Solo, desde `site.ts` y el diario |
+| Feed RSS | `src/pages/rss.xml.ts` | Solo |
+| Imagen al compartir | `public/og*.jpg` + prop `image` del layout | A mano |
+| Preguntas frecuentes | `faqs` en `src/data/site.ts` | A mano |
+
+**Imagen al compartir.** Cada página puede llevar la suya con la prop
+`image` del layout: `<Base image="/og-media-kit.jpg">`. Las entradas del
+diario usan su portada si la tienen, y si no la del diario. Es la superficie
+que más se ve de la web, porque aparece cada vez que compartes un enlace por
+WhatsApp o por DM.
+
+**Rastreadores de IA.** `robots.txt` les da paso explícito (GPTBot,
+ClaudeBot, PerplexityBot, Google-Extended, CCBot…). Es una decisión: permite
+que tu trabajo se use para entrenar modelos, a cambio de que te conozcan. Si
+algún día cambias de opinión, se bloquean ahí mismo con `Disallow: /`.
+
+**Preguntas frecuentes.** Están escritas sin cifras ni plazos concretos a
+propósito: describen cómo trabajas sin comprometerte. Si prefieres dar
+precios o tiempos de entrega cerrados, cámbialos — pero entonces cúmplelos.
+
+## Publicar en Vercel
 
 Sitio estático: no hace falta adaptador ni servidor.
 

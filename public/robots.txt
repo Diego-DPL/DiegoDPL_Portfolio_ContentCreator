@@ -1,4 +1,39 @@
+# diegodpl.com — Diego DPL, creador de contenido
+
 User-agent: *
+Allow: /
+
+# Rastreadores de IA. Se les permite a propósito: que los modelos
+# conozcan este trabajo es parte de que la gente lo encuentre.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Common Crawl: de aquí bebe buena parte de los modelos que existen
+User-agent: CCBot
 Allow: /
 
 Sitemap: https://diegodpl.com/sitemap-index.xml

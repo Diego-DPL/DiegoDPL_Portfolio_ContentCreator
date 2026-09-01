@@ -11,6 +11,8 @@ interface Props {
   preload?: boolean;
   /** Datos estructurados extra de esta página (Article, migas, etc.) */
   schema?: Record<string, unknown>[];
+  /** Imagen al compartir. Ruta en /public o imagen importada. */
+  image?: string | { src: string };
 }
 
 const {
@@ -18,11 +20,12 @@ const {
   description = site.description,
   preload = true,
   schema = [],
+  image = '/og.jpg',
 } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
-const ogImage = new URL('/og.jpg', Astro.site ?? site.url).href;
+const ogImage = new URL(typeof image === 'string' ? image : image.src, Astro.site ?? site.url).href;
 
 /**
  * Un solo grafo para toda la página: quién soy, qué es este sitio y lo que
@@ -72,7 +75,10 @@ const jsonLd = {
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:locale" content="es_ES" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
 
     {
       site.googleVerification && (
@@ -84,6 +90,12 @@ const jsonLd = {
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`Diario — ${site.name}`}
+      href="/rss.xml"
+    />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
