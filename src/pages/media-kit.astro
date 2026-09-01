@@ -4,12 +4,22 @@ import Marquee from '~/components/Marquee.astro';
 import DustFrame from '~/components/DustFrame.astro';
 import { site, metrics, audience, services, brands } from '~/data/site';
 import cenital from '~/assets/media/cenital.jpg';
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: site.url },
+      { '@type': 'ListItem', position: 2, name: 'Media kit' },
+    ],
+  },
+];
 ---
 
 <Base
   title="Media kit"
   description="Media kit de Diego DPL: audiencia, alcance y servicios de creación de contenido para marcas de running, outdoor, viajes y lifestyle."
   preload={false}
+  schema={schema}
 >
   <!-- Portada -->
   <section class="mk-hero" data-tone="night">

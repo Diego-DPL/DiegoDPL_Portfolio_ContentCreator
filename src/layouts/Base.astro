@@ -9,29 +9,50 @@ interface Props {
   description?: string;
   /** Oculta el preloader en páginas interiores */
   preload?: boolean;
+  /** Datos estructurados extra de esta página (Article, migas, etc.) */
+  schema?: Record<string, unknown>[];
 }
 
 const {
   title,
   description = site.description,
   preload = true,
+  schema = [],
 } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
 const ogImage = new URL('/og.jpg', Astro.site ?? site.url).href;
 
+/**
+ * Un solo grafo para toda la página: quién soy, qué es este sitio y lo que
+ * cada página añada por su cuenta (un artículo, unas migas de pan…).
+ */
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: site.name,
-  url: site.url,
-  email: `mailto:${site.email}`,
-  jobTitle: site.role,
-  description: site.description,
-  address: { '@type': 'PostalAddress', addressLocality: 'Murcia', addressCountry: 'ES' },
-  knowsLanguage: site.languages,
-  sameAs: socials.map((s) => s.href),
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${site.url}/#diego`,
+      name: site.name,
+      url: site.url,
+      email: `mailto:${site.email}`,
+      jobTitle: site.role,
+      description: site.description,
+      address: { '@type': 'PostalAddress', addressLocality: 'Murcia', addressCountry: 'ES' },
+      knowsLanguage: [...site.languages],
+      sameAs: socials.map((s) => s.href),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${site.url}/#web`,
+      url: site.url,
+      name: site.name,
+      inLanguage: 'es-ES',
+      publisher: { '@id': `${site.url}/#diego` },
+    },
+    ...schema,
+  ],
 };
 ---
 
@@ -52,6 +73,12 @@ const jsonLd = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:locale" content="es_ES" />
     <meta name="twitter:card" content="summary_large_image" />
+
+    {
+      site.googleVerification && (
+        <meta name="google-site-verification" content={site.googleVerification} />
+      )
+    }
 
     <meta name="theme-color" content="#0B0907" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

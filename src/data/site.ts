@@ -29,6 +29,12 @@ export const site = {
   description:
     'Portafolio de Diego DPL, creador de contenido de running, viajes y lifestyle. Dirección, fotografía y edición con estética documental analógica para marcas.',
   tagline: 'El camino se hace levantando polvo.',
+  /**
+   * Código de Google Search Console. Sólo hace falta si verificas por
+   * etiqueta HTML; si verificas por DNS (recomendado) déjalo vacío.
+   * Se pone en .env como PUBLIC_GOOGLE_SITE_VERIFICATION.
+   */
+  googleVerification: import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
 } as const;
 
 /* ------------------------------------------------------------------ */
