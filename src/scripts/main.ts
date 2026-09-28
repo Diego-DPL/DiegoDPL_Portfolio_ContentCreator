@@ -456,9 +456,12 @@ function initContactForm(): void {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Trampa para bots: si está relleno, fingimos éxito y no enviamos nada
+    // Trampa para bots: una casilla oculta que sólo marcaría un robot. Si está
+    // marcada, fingimos éxito y no enviamos nada. OJO: hay que mirar `checked`,
+    // no `value` — una casilla siempre vale "on" aunque esté sin marcar, y eso
+    // hacía que TODOS los envíos se tomaran por bots y no saliera ninguno.
     const honey = form.querySelector<HTMLInputElement>('input[name="botcheck"]');
-    if (honey?.value) {
+    if (honey?.checked) {
       say(t.ok, 'ok');
       return;
     }
