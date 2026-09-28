@@ -83,6 +83,9 @@ import { site, contact, socials } from '~/data/site';
             <span aria-hidden="true">→</span>
           </button>
           <p class="ct__status kicker" data-form-status role="status" aria-live="polite"></p>
+          <p class="ct__legal">
+            Uso tus datos sólo para contestarte. <a href="/privacidad" class="link-dust">Privacidad</a>
+          </p>
         </div>
       </form>
 
@@ -189,6 +192,8 @@ import { site, contact, socials } from '~/data/site';
     border-top: 1px solid var(--rule);
   }
   .ct__status { margin: 0; }
+  .ct__legal { flex-basis: 100%; margin: 0; font-size: 0.8rem; color: var(--fg-faint); }
+  .ct__legal a { color: var(--fg-muted); }
   .ct__status[data-kind='ok'] { color: var(--color-ochre); }
   .ct__status[data-kind='error'] { color: var(--color-clay); }
 

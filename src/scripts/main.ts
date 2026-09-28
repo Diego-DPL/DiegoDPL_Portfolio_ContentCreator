@@ -8,6 +8,7 @@ import { initHorizon } from './horizon';
 import { initJourney } from './journey';
 import { initWind } from './wind';
 import { initStorm } from './storm';
+import { initConsent, track } from './consent';
 
 gsap.registerPlugin(ScrollTrigger);
 // En móvil la barra del navegador aparece y desaparece al hacer scroll y
@@ -478,6 +479,7 @@ function initContactForm(): void {
           `Marca: ${data.get('company') ?? '—'}\nPresupuesto: ${data.get('budget') ?? '—'}\n\n` +
           `${data.get('message')}`,
       );
+      track('generate_lead', { method: 'mailto', subject: String(data.get('subject') ?? '') });
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
       say(t.mailto, 'ok');
       return;
@@ -495,6 +497,8 @@ function initContactForm(): void {
       const json = (await res.json()) as { success?: boolean };
 
       if (res.ok && json.success) {
+        // El evento que más importa: una marca ha escrito
+        track('generate_lead', { method: 'form', subject: String(data.get('subject') ?? '') });
         form.reset();
         say(t.ok, 'ok');
       } else {
@@ -526,6 +530,7 @@ function boot(): void {
   initJourney();
   initWind();
   initStorm();
+  initConsent();
 
   initPreloader(() => {
     document.body.classList.add('is-ready');

@@ -4,6 +4,7 @@ import { site, socials, certification } from '~/data/site';
 import Nav from '~/components/Nav.astro';
 import Footer from '~/components/Footer.astro';
 import Journey from '~/components/Journey.astro';
+import Consent from '~/components/Consent.astro';
 
 interface Props {
   title?: string;
@@ -87,7 +88,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang={lang} class:list={[preload && 'is-loading']}>
+<html lang={lang} class:list={[preload && 'is-loading']} data-ga={import.meta.env.PUBLIC_GA_ID || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -217,6 +218,7 @@ const jsonLd = {
     <Footer lang={lang} />
 
     <Journey lang={lang} />
+    <Consent lang={lang} />
 
     <script>
       import '~/scripts/main';

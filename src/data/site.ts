@@ -40,6 +40,21 @@ export const site = {
 } as const;
 
 /* ------------------------------------------------------------------ */
+/* DATOS LEGALES — para /privacidad                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * La ley (RGPD y LSSI) pide identificar al responsable de la web con su
+ * nombre legal y NIF. Mientras estén vacíos, /privacidad muestra el nombre
+ * comercial y el email, que no basta del todo: rellénalos.
+ */
+export const legal = {
+  owner: '',
+  nif: '',
+  updated: '28 de septiembre de 2026',
+} as const;
+
+/* ------------------------------------------------------------------ */
 /* CERTIFICACIÓN PUBLICITARIA                                          */
 /* ------------------------------------------------------------------ */
 

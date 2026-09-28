@@ -17,6 +17,7 @@ const t = isEn
     };
 const items = isEn ? en.nav : nav;
 const year = new Date().getFullYear();
+const gaId = import.meta.env.PUBLIC_GA_ID ?? '';
 ---
 
 <footer class="foot" data-tone="night">
@@ -75,7 +76,11 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="foot__bottom rule-t">
-      <p class="kicker">© {year} {site.name}</p>
+      <p class="kicker foot__legal">
+        © {year} {site.name}
+        <a href="/privacidad" class="link-dust">{isEn ? 'Privacy & cookies' : 'Privacidad y cookies'}</a>
+        {gaId && <button type="button" class="link-dust foot__cookies" data-consent-open>{isEn ? 'Cookie settings' : 'Preferencias de cookies'}</button>}
+      </p>
       <p class="kicker foot__made">{t.made}</p>
       <p class="kicker">
         {t.by}
@@ -119,6 +124,8 @@ const year = new Date().getFullYear();
     padding-top: 1.5rem;
   }
   .foot__by { color: var(--fg); }
+  .foot__legal { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .foot__cookies { font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; padding: 0; }
   /* En pantallas estrechas el lema sobra: lo importante es el crédito */
   @media (max-width: 720px) {
     .foot__made { display: none; }

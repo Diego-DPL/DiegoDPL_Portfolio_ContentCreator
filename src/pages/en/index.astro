@@ -325,6 +325,9 @@ const brandsEn = [
           <div class="ct__actions">
             <button type="submit" class="btn" data-magnetic>{en.form.send} <span aria-hidden="true">→</span></button>
             <p class="ct__status kicker" data-form-status role="status" aria-live="polite"></p>
+            <p class="ct__legal">
+              Your details are only used to reply. <a href="/privacidad" class="link-dust">Privacy (in Spanish)</a>
+            </p>
           </div>
         </form>
 
@@ -486,6 +489,8 @@ const brandsEn = [
   .field:focus-within label { color: var(--accent); }
   .ct__actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
   .ct__status { margin: 0; }
+  .ct__legal { flex-basis: 100%; margin: 0; font-size: 0.8rem; color: var(--fg-faint); }
+  .ct__legal a { color: var(--fg-muted); }
   .ct__status[data-kind='ok'] { color: var(--accent); }
   .ct__status[data-kind='error'] { color: var(--color-rust); }
 

@@ -1,0 +1,101 @@
+---
+/**
+ * CONSENTIMIENTO DE COOKIES
+ * -------------------------
+ * Google Analytics sólo se carga si el visitante acepta (consent.ts). Sin
+ * PUBLIC_GA_ID configurado no se pinta nada: la web no usa ninguna otra
+ * cookie y no hace falta preguntar.
+ *
+ * «Aceptar» y «Rechazar» pesan lo mismo a propósito: la AEPD considera
+ * engañoso destacar uno sobre otro.
+ */
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+const gaId = import.meta.env.PUBLIC_GA_ID ?? '';
+
+const t =
+  lang === 'en'
+    ? {
+        label: 'Cookies',
+        text: 'I use Google Analytics to know how many people visit and where they come from. Only if you say yes.',
+        more: 'More info',
+        accept: 'Accept',
+        reject: 'Reject',
+      }
+    : {
+        label: 'Cookies',
+        text: 'Uso Google Analytics para saber cuánta gente llega y desde dónde. Sólo si aceptas.',
+        more: 'Más información',
+        accept: 'Aceptar',
+        reject: 'Rechazar',
+      };
+---
+
+{
+  gaId && (
+    <div class="cc" data-consent hidden role="dialog" aria-label={t.label} aria-modal="false">
+      <p class="cc__text">
+        {t.text} <a href="/privacidad#cookies" class="link-dust cc__more">{t.more}</a>
+      </p>
+      <div class="cc__actions">
+        <button type="button" class="cc__btn" data-consent-choice="denied">{t.reject}</button>
+        <button type="button" class="cc__btn" data-consent-choice="granted">{t.accept}</button>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .cc {
+    position: fixed;
+    left: clamp(0.75rem, 0.4rem + 1.5vw, 1.75rem);
+    bottom: clamp(0.75rem, 0.4rem + 1.5vw, 1.75rem);
+    z-index: 110;
+    width: min(26rem, calc(100vw - 1.5rem));
+    display: grid;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    background: color-mix(in oklab, var(--color-ink-800) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in oklab, var(--color-sand-300) 18%, transparent);
+    color: var(--color-sand-100);
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+    transition: opacity 0.7s var(--ease-soft), transform 0.8s var(--ease-dust);
+  }
+  .cc.is-on { opacity: 1; transform: none; }
+  /* En escritorio, a la derecha: a la izquierda tapaba «Trabajar conmigo» */
+  @media (min-width: 900px) {
+    .cc { left: auto; right: clamp(3.5rem, 2rem + 3vw, 5.5rem); }
+  }
+  .cc[hidden] { display: none; }
+
+  .cc__text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: color-mix(in oklab, var(--color-sand-200) 88%, transparent);
+  }
+  .cc__more { color: var(--color-sand-50); white-space: nowrap; }
+
+  .cc__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .cc__btn {
+    padding: 0.8rem 1rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--color-sand-300) 40%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-sand-50);
+    transition: background-color 0.35s var(--ease-soft), color 0.35s var(--ease-soft), border-color 0.35s;
+  }
+  .cc__btn:hover,
+  .cc__btn:focus-visible {
+    background: var(--color-sand-50);
+    border-color: var(--color-sand-50);
+    color: var(--color-ink-900);
+  }
+</style>
