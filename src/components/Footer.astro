@@ -38,6 +38,8 @@ const year = new Date().getFullYear();
         <p class="kicker">{t.index}</p>
         <ul class="foot__list">
           {items.map((i) => <li><a href={i.href} class="link-dust">{i.label}</a></li>)}
+          {/* Fuera del menú y de la portada, pero enlazado: así Google sigue llegando */}
+          {!isEn && <li><a href="/diario" class="link-dust">Diario</a></li>}
         </ul>
       </div>
 

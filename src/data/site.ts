@@ -29,6 +29,8 @@ export const site = {
   description:
     'Portafolio de Diego DPL, creador de contenido de running, viajes y lifestyle. Dirección, fotografía y edición con estética documental analógica para marcas.',
   tagline: 'El camino se hace levantando polvo.',
+  /** Título de la portada en Google: qué haces y dónde, no sólo el nombre */
+  homeTitle: 'Diego DPL — Creador de contenido de running y viajes en Murcia',
   /**
    * Código de Google Search Console. Sólo hace falta si verificas por
    * etiqueta HTML; si verificas por DNS (recomendado) déjalo vacío.
@@ -107,8 +109,9 @@ export const nav = [
   { label: 'Sobre mí', href: '/#sobre-mi', index: '03' },
   // `cta` lo pinta destacado: es la única entrada comercial del menú
   { label: 'Marcas', href: '/media-kit', index: '04', cta: true },
-  { label: 'Diario', href: '/diario', index: '05' },
-  { label: 'Contacto', href: '/#contacto', index: '06' },
+  // El diario ya no va en el menú: sus entradas están para el buscador, no
+  // para quien llega a la portada. Se enlaza desde el pie (Footer.astro).
+  { label: 'Contacto', href: '/#contacto', index: '05' },
 ] as const;
 
 /* ------------------------------------------------------------------ */

@@ -30,7 +30,7 @@ const {
   alternates = [],
 } = Astro.props;
 
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+const fullTitle = title ? `${title} — ${site.name}` : site.homeTitle;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
 const ogImage = new URL(typeof image === 'string' ? image : image.src, Astro.site ?? site.url).href;
 
