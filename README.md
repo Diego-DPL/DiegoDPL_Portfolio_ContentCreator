@@ -117,6 +117,22 @@ página buena convierte más que cinco a medias.
 Si algún día quieres más páginas en inglés, el patrón ya está: `lang="en"`,
 `alternates` con su pareja, y los textos en `en.ts`.
 
+## La experiencia: el desierto
+
+Piezas que construyen la sensación de cruzar el desierto solo. Ninguna
+necesita imágenes ni audio: todo se genera en el navegador.
+
+| Pieza | Archivo | Qué hace |
+| --- | --- | --- |
+| El horizonte | `components/Horizon.astro` + `scripts/horizon.ts` | Dunas al atardecer dibujadas en SVG. Una figura diminuta corre sola por la cresta; el sol se pone al bajar. |
+| La arena | `scripts/dust.ts` | Viento lateral, granos que se estiran con la velocidad y arena rasante en el cuarto inferior. |
+| El revelado | `styles/global.css` (`.frame`) | Todas las fotos pasan por el mismo "carrete": cálido, negros levantados. |
+| El recorrido | `components/Journey.astro` + `scripts/journey.ts` | La página es un maratón (0 → 42,195 km) en el margen derecho. Los tramos salen de `data-chapter` en cada sección; sin ellos no aparece. |
+| El viento | `scripts/wind.ts` | Sonido sintetizado, apagado por defecto (botón «Viento» del menú). Sopla más con el scroll rápido. |
+
+Si vuelves a poner el retrato del hero, quedará encima del sol: mueve el sol
+(`sun` en `Horizon.astro`) o el retrato.
+
 ## SEO y visibilidad
 
 Lo que hay montado, para que sepas qué tocar:

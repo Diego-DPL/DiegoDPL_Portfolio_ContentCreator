@@ -29,7 +29,7 @@ const path = Astro.url.pathname;
         items.map((item) => (
           <a
             href={item.href}
-            class="nav__link"
+            class:list={['nav__link', 'cta' in item && item.cta && 'nav__link--cta']}
             aria-current={path === item.href ? 'page' : undefined}
           >
             <span class="nav__link-index">{item.index}</span>
@@ -47,6 +47,12 @@ const path = Astro.url.pathname;
         <span class="link-dust">{otro.label}</span>
       </a>
     </nav>
+
+    <button class="nav__sound" type="button" data-sound aria-pressed="false">
+      <span class="nav__sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="nav__sound-label">{lang === 'en' ? 'Wind' : 'Viento'}</span>
+      <span class="sr-only">{lang === 'en' ? '— ambient sound' : '— sonido ambiente'}</span>
+    </button>
 
     <button class="nav__burger" data-menu-toggle aria-expanded="false" aria-controls="menu">
       <span class="sr-only">{lang === 'en' ? 'Open menu' : 'Abrir menú'}</span>
@@ -132,6 +138,19 @@ const path = Astro.url.pathname;
   }
   .nav__link[aria-current='page'] { color: var(--color-ochre); }
 
+  /* La única entrada comercial del menú: un punto la señala sin gritar */
+  .nav__link--cta { color: var(--color-ochre); }
+  .nav__link--cta .nav__link-index { opacity: 0.7; }
+  .nav__link--cta::after {
+    content: '';
+    align-self: center;
+    width: 0.3rem;
+    height: 0.3rem;
+    margin-left: 0.15rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
   .nav__lang {
     margin-left: 0.5rem;
     padding-left: clamp(1.25rem, 2.4vw, 2.5rem);
@@ -139,6 +158,49 @@ const path = Astro.url.pathname;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
+  }
+
+  /* — Sonido: cinco barras quietas que se levantan con el viento — */
+  .nav__sound {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-left: auto;
+    padding: 0.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, currentColor 60%, transparent);
+    transition: color 0.4s var(--ease-soft);
+  }
+  .nav__sound:hover,
+  .nav__sound.is-on { color: var(--color-sand-50); }
+  .nav__sound-bars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 12px;
+  }
+  .nav__sound-bars i {
+    display: block;
+    width: 1px;
+    height: 100%;
+    background: currentColor;
+    transform: scaleY(0.12);
+    transition: transform 0.6s var(--ease-dust);
+  }
+  .nav__sound.is-on .nav__sound-bars i { animation: nav-wind 1.9s ease-in-out infinite; }
+  .nav__sound.is-on .nav__sound-bars i:nth-child(2) { animation-delay: -0.4s; animation-duration: 2.3s; }
+  .nav__sound.is-on .nav__sound-bars i:nth-child(3) { animation-delay: -1.1s; animation-duration: 1.6s; }
+  .nav__sound.is-on .nav__sound-bars i:nth-child(4) { animation-delay: -0.7s; animation-duration: 2.6s; }
+  .nav__sound.is-on .nav__sound-bars i:nth-child(5) { animation-delay: -1.5s; animation-duration: 2s; }
+  @keyframes nav-wind {
+    0%, 100% { transform: scaleY(0.2); }
+    50% { transform: scaleY(1); }
+  }
+  @media (max-width: 480px) {
+    .nav__sound-label { display: none; }
   }
 
   .nav__burger {
@@ -156,8 +218,13 @@ const path = Astro.url.pathname;
   .nav__burger-line:last-child { width: 62%; margin-left: auto; }
 
   @media (min-width: 1000px) {
-    .nav__links { display: flex; }
+    .nav__links { display: flex; margin-left: auto; }
     .nav__burger { display: none; }
+    .nav__sound {
+      margin-left: -0.5rem;
+      padding-left: clamp(1.25rem, 2.4vw, 2.5rem);
+      border-left: 1px solid color-mix(in oklab, currentColor 30%, transparent);
+    }
   }
 
   /* — Menú a pantalla completa — */

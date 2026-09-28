@@ -32,6 +32,11 @@
   --color-rust:   #8A3E24;
   --color-olive:  #5E6350;
 
+  /* — Atardecer: el cielo del hero y la luz rasante sobre la arena — */
+  --color-sun:    #F4C685;
+  --color-ember:  #D9793F;
+  --color-dusk:   #7A3622;
+
   /* — Tipografía — */
   --font-display: "Instrument Serif", ui-serif, Georgia, serif;
   --font-sans: "Inter Tight Variable", "Inter Tight", ui-sans-serif, system-ui, sans-serif;
@@ -61,7 +66,7 @@
   --fg-faint: color-mix(in oklab, var(--color-sand-300) 26%, transparent);
   --rule: color-mix(in oklab, var(--color-sand-300) 16%, transparent);
   --accent: var(--color-ochre);
-  --dust-rgb: 219 200 170;
+  --dust-rgb: 232 190 140;
   --grain-opacity: 0.055;
 }
 
@@ -73,7 +78,7 @@
   --fg-faint: color-mix(in oklab, var(--color-ink-700) 26%, transparent);
   --rule: color-mix(in oklab, var(--color-ink-700) 16%, transparent);
   --accent: var(--color-clay);
-  --dust-rgb: 120 96 68;
+  --dust-rgb: 140 98 60;
   --grain-opacity: 0.075;
 }
 
@@ -407,9 +412,37 @@
   height: 100%;
   object-fit: cover;
 }
+
+/*
+  EL REVELADO
+  Todas las fotos pasan por el mismo laboratorio: negros levantados, luces
+  cálidas, color contenido. Así un cielo azul de móvil y un atardecer de
+  cámara parecen del mismo carrete. Sólo afecta a la imagen, nunca al marco.
+*/
+.frame img,
+.frame video {
+  filter: sepia(0.26) saturate(0.86) contrast(1.04) brightness(0.97) hue-rotate(-8deg);
+}
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    /* luz que entra por arriba, como un velo de sol */
+    radial-gradient(120% 70% at 70% 0%, rgb(255 190 120 / 0.2), transparent 60%),
+    /* sombras hacia el marrón, nunca al negro puro */
+    linear-gradient(180deg, transparent 55%, rgb(60 28 14 / 0.28));
+  mix-blend-mode: soft-light;
+}
 .frame--reveal > * {
   transform: scale(1.12);
-  transition: transform 1.6s var(--ease-dust) var(--rv-delay, 0s);
+  /* las dos a la vez: la cortina se abre mientras la foto se asienta.
+     Si sólo se declara transform, pisa la del revelado y la cortina salta. */
+  transition:
+    clip-path 1.25s var(--ease-dust) var(--rv-delay, 0s),
+    transform 1.6s var(--ease-dust) var(--rv-delay, 0s);
 }
 .frame--reveal.is-in > * { transform: scale(1); }
 

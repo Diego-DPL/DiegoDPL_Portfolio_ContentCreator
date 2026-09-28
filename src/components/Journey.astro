@@ -1,0 +1,142 @@
+---
+/**
+ * EL RECORRIDO
+ * ------------
+ * La página entera es un maratón: 42,195 km de arriba abajo. Un eje fijo en
+ * el margen derecho marca por dónde vas, deja tus pisadas detrás y dice en
+ * qué tramo del viaje estás. Vive en el margen para no pisar nunca el texto.
+ *
+ * Sólo aparece en páginas cuyas secciones declaran data-chapter="…"; en las
+ * demás journey.ts no la enciende. Es decorativa: el lector de pantalla ya
+ * tiene los encabezados de cada sección.
+ */
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+---
+
+<div class="jy" data-journey aria-hidden="true" data-goal={lang === 'en' ? 'Finish' : 'Meta'}>
+  <span class="jy__chapter kicker" data-journey-chapter></span>
+
+  <div class="jy__track">
+    <span class="jy__trail" data-journey-trail></span>
+    <span class="jy__runner" data-journey-runner>
+      <span class="jy__km kicker">KM <b data-journey-km>00,0</b></span>
+    </span>
+  </div>
+
+  <span class="jy__goal kicker">42,195</span>
+</div>
+
+<style>
+  .jy {
+    position: fixed;
+    top: 22vh;
+    bottom: 10vh;
+    right: clamp(0.55rem, 0.1rem + 1.3vw, 1.9rem);
+    z-index: 50;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: 1rem;
+    color: var(--color-sand-50);
+    mix-blend-mode: difference;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(0.75rem, 0, 0);
+    transition: opacity 0.9s var(--ease-soft), transform 0.9s var(--ease-dust);
+  }
+  .jy.is-on { opacity: 1; transform: none; }
+
+  /* Rótulos en vertical, leídos de abajo arriba como el lomo de un libro */
+  .jy .kicker {
+    color: inherit;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    font-size: 0.6rem;
+  }
+  .jy__chapter {
+    max-height: 11rem;
+    overflow: hidden;
+    transition: opacity 0.5s var(--ease-soft), filter 0.5s var(--ease-soft);
+  }
+  .jy__chapter.is-changing { opacity: 0; filter: blur(4px); }
+  .jy__goal { opacity: 0.5; }
+
+  .jy__track {
+    --faint: color-mix(in oklab, currentColor 32%, transparent);
+    position: relative;
+    width: 7px;
+    /* la línea apagada es el camino que falta; un hito cada 5 km */
+    background:
+      linear-gradient(var(--faint), var(--faint)) 50% 0 / 1px 100% no-repeat,
+      repeating-linear-gradient(180deg, var(--faint) 0 1px, transparent 1px calc(100% * 5 / 42.195));
+  }
+
+  /* Tus pisadas: la parte recorrida es un trazo discontinuo, paso a paso */
+  .jy__trail {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 3px;
+    height: 100%;
+    margin-left: -1.5px;
+    transform-origin: center top;
+    transform: scaleY(0);
+    background: repeating-linear-gradient(180deg, currentColor 0 3px, transparent 3px 7px);
+  }
+
+  .jy__runner {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: currentColor;
+    will-change: transform;
+  }
+  .jy__runner::after {
+    /* respira: el pulso de quien sigue corriendo */
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0;
+    animation: jy-pulse 2.2s var(--ease-soft) infinite;
+  }
+  @keyframes jy-pulse {
+    0% { transform: scale(0.4); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  .jy__km {
+    position: absolute;
+    right: 1.15rem;
+    top: 50%;
+    translate: 0 -50%;
+    letter-spacing: 0.18em;
+  }
+  .jy__km b { font-weight: 400; font-variant-numeric: tabular-nums; }
+
+  /* En móvil sólo queda el eje y el punto: el margen no da para rótulos */
+  @media (max-width: 640px) {
+    .jy { top: 30vh; bottom: 16vh; }
+    .jy__chapter,
+    .jy__goal,
+    .jy__km { display: none; }
+    .jy__runner { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .jy__runner::after { animation: none; }
+  }
+
+  @media print {
+    .jy { display: none; }
+  }
+</style>

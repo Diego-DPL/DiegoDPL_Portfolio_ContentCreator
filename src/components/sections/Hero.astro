@@ -1,10 +1,15 @@
 ---
-import { site } from '~/data/site';
-import DustFrame from '~/components/DustFrame.astro';
-import retrato from '~/assets/media/diego-super8.jpg';
+import { site, mediaKitPdf } from '~/data/site';
+import Horizon from '~/components/Horizon.astro';
+// TEMPORAL: retrato del hero retirado a petición de Diego.
+// Para devolverlo: descomenta este import y el bloque .hero__portrait de abajo.
+// import DustFrame from '~/components/DustFrame.astro';
+// import retrato from '~/assets/media/diego-super8.jpg';
 ---
 
-<section class="hero" data-tone="night" data-hero>
+<section class="hero" data-tone="night" data-hero data-chapter="La salida">
+  <Horizon />
+
   <!--
     Ficha de cabecera. Va fuera de la rejilla y anclada bajo el menú: dentro
     quedaba centrada con el resto y en portátil se metía detrás de la foto.
@@ -25,12 +30,29 @@ import retrato from '~/assets/media/diego-super8.jpg';
       <em>después</em> de haberlas caminado.
     </p>
 
+    <!--
+      La primera pantalla tenía claim pero ninguna acción: quien llega desde
+      la bio de Instagram no tenía dónde pulsar. Estos dos enlaces son la
+      entrada comercial; el resto del viaje sigue intacto más abajo.
+    -->
+    <div class="hero__actions" data-hero-fade>
+      <a href="/media-kit" class="btn" data-magnetic>
+        Trabajar conmigo
+        <span aria-hidden="true">→</span>
+      </a>
+      <a href={mediaKitPdf.file} class="hero__pdf" download>
+        <span class="kicker">{mediaKitPdf.label}</span>
+        <span aria-hidden="true">↓</span>
+      </a>
+    </div>
+
     <div class="hero__scroll" data-hero-fade>
       <span class="kicker">Desplázate</span>
       <span class="hero__scroll-line" aria-hidden="true"></span>
     </div>
   </div>
 
+  {/* TEMPORAL — retrato retirado. Descomenta para devolverlo.
   <!--
     El retrato: en escritorio es un panel a la derecha, junto al nombre.
     En móvil pasa a ser el fondo a sangre, detrás del texto. Es el mismo
@@ -48,6 +70,7 @@ import retrato from '~/assets/media/diego-super8.jpg';
     />
     <p class="hero__caption kicker">Super 8 · sin retoque</p>
   </div>
+  */}
 
   <div class="hero__veil" aria-hidden="true"></div>
 </section>
@@ -70,6 +93,25 @@ import retrato from '~/assets/media/diego-super8.jpg';
     align-items: end;
     row-gap: clamp(1.5rem, 4vw, 3rem);
   }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+  }
+  .hero__pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.4s var(--ease-soft), border-color 0.4s var(--ease-soft);
+  }
+  .hero__pdf:hover,
+  .hero__pdf:focus-visible { color: var(--fg); border-color: var(--accent); }
 
   .hero__meta {
     position: absolute;
@@ -183,13 +225,12 @@ import retrato from '~/assets/media/diego-super8.jpg';
     background:
       linear-gradient(
         180deg,
-        rgb(11 9 7 / 0.68) 0%,
-        rgb(11 9 7 / 0.12) 26%,
-        rgb(11 9 7 / 0.42) 58%,
-        rgb(11 9 7 / 0.9) 82%,
-        rgb(11 9 7 / 0.97) 100%
-      ),
-      radial-gradient(85% 55% at 38% 42%, transparent 0%, rgb(11 9 7 / 0.34) 100%);
+        rgb(11 9 7 / 0.6) 0%,
+        transparent 22%,
+        transparent 46%,
+        rgb(11 9 7 / 0.55) 60%,
+        rgb(11 9 7 / 0.92) 76%
+      );
   }
 
   /* ============================================================
@@ -238,9 +279,12 @@ import retrato from '~/assets/media/diego-super8.jpg';
       color: var(--fg-faint);
     }
 
-    /* Sin foto a sangre, el velo sólo asienta los bordes */
+    /* El velo asienta el menú arriba y oscurece la mitad del texto: el
+       resplandor del sol queda libre a la derecha, detrás de nada. */
     .hero__veil {
-      background: linear-gradient(180deg, rgb(11 9 7 / 0.5) 0%, transparent 24%, rgb(11 9 7 / 0.5) 100%);
+      background:
+        linear-gradient(180deg, rgb(11 9 7 / 0.55) 0%, transparent 22%),
+        radial-gradient(70% 80% at 12% 52%, rgb(11 9 7 / 0.7) 0%, rgb(11 9 7 / 0.3) 55%, transparent 80%);
     }
   }
 

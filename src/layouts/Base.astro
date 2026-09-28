@@ -1,8 +1,9 @@
 ---
 import '~/styles/global.css';
-import { site, socials } from '~/data/site';
+import { site, socials, certification } from '~/data/site';
 import Nav from '~/components/Nav.astro';
 import Footer from '~/components/Footer.astro';
+import Journey from '~/components/Journey.astro';
 
 interface Props {
   title?: string;
@@ -50,7 +51,27 @@ const jsonLd = {
       description: site.description,
       address: { '@type': 'PostalAddress', addressLocality: 'Murcia', addressCountry: 'ES' },
       knowsLanguage: [...site.languages],
+      knowsAbout: [
+        'Creación de contenido para marcas',
+        'Running y trail running',
+        'Fotografía documental',
+        'Producción y edición de vídeo',
+        'Normativa publicitaria para influencers',
+      ],
       sameAs: socials.map((s) => s.href),
+      hasCredential: {
+        '@type': 'EducationalOccupationalCredential',
+        name: certification.name,
+        credentialCategory: 'certificate',
+        recognizedBy: {
+          '@type': 'Organization',
+          name: certification.issuerFull,
+          url: certification.issuerUrl,
+        },
+        dateCreated: certification.issued,
+        expires: certification.expires,
+        url: `${site.url}${certification.file}`,
+      },
     },
     {
       '@type': 'WebSite',
@@ -163,6 +184,8 @@ const jsonLd = {
     </main>
 
     <Footer lang={lang} />
+
+    <Journey lang={lang} />
 
     <script>
       import '~/scripts/main';

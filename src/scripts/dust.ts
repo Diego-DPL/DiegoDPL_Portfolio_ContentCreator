@@ -2,7 +2,9 @@
  * EL POLVO
  * --------
  * El leitmotiv del sitio. Un sistema de partículas en canvas 2D que:
- *   · flota con un viento base (el desierto nunca está quieto),
+ *   · lo arrastra un viento lateral (el desierto nunca está quieto),
+ *   · a ras de suelo corre una capa de arena más rápida, como en las dunas,
+ *   · cada grano se estira en la dirección en la que viaja: arena, no estrellas,
  *   · se levanta cuando haces scroll rápido (una ráfaga),
  *   · se aparta del cursor,
  *   · cambia de color cuando entras en una sección de día o de noche.
@@ -25,6 +27,9 @@ interface Mote {
   /** fase del bamboleo, para que ninguna partícula se mueva igual que otra */
   phase: number;
   spin: number;
+  /** grano a ras de suelo: rápido, pequeño, vive en la franja inferior */
+  ground: boolean;
+  haze: boolean;
 }
 
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,7 +41,7 @@ export function initDust(canvas: HTMLCanvasElement): void {
   if (!ctx) return;
 
   const coarse = window.matchMedia('(pointer: coarse)').matches;
-  const BASE_COUNT = coarse ? 70 : 190;
+  const BASE_COUNT = coarse ? 80 : 210;
 
   let width = 0;
   let height = 0;
@@ -45,7 +50,7 @@ export function initDust(canvas: HTMLCanvasElement): void {
   const motes: Mote[] = [];
 
   /* — Color activo, interpolado suavemente entre día y noche — */
-  const tone: Tone = { r: 219, g: 200, b: 170 };
+  const tone: Tone = { r: 230, g: 190, b: 140 };
   const toneTarget: Tone = { ...tone };
   let sprite: HTMLCanvasElement | null = null;
   let spriteKey = '';
@@ -93,27 +98,35 @@ export function initDust(canvas: HTMLCanvasElement): void {
   /* Partículas                                                        */
   /* ---------------------------------------------------------------- */
 
+  /** La franja de suelo: el cuarto inferior de la pantalla */
+  const groundTop = (): number => height * 0.74;
+
   function spawn(seedY?: number): Mote {
     const z = 0.15 + Math.pow(Math.random(), 1.6) * 0.85;
 
-    // Una de cada cuatro partículas es "bruma": enorme y casi invisible.
-    // Son las que hacen que el aire tenga cuerpo en vez de parecer un cielo.
-    const haze = Math.random() < 0.26;
+    // Una de cada cinco partículas es "bruma": enorme y casi invisible.
+    // Son las que hacen que el aire tenga cuerpo.
+    const haze = Math.random() < 0.2;
+    // Un tercio del resto es arena rasante, la que el viento peina sobre la duna
+    const ground = !haze && Math.random() < 0.34;
 
     return {
       x: Math.random() * width,
-      y: seedY ?? Math.random() * height,
+      y: seedY ?? (ground ? groundTop() + Math.random() * (height - groundTop()) : Math.random() * height),
       z,
       size: haze
         ? (10 + Math.random() * 22) * z * dpr
-        : (0.7 + Math.random() * 2.2) * z * dpr,
+        : (0.6 + Math.random() * (ground ? 1.4 : 2)) * z * dpr,
       alpha: haze
         ? (0.012 + Math.random() * 0.03) * z
-        : (0.03 + Math.random() * 0.17) * z,
-      vx: (Math.random() - 0.5) * (haze ? 0.07 : 0.16),
-      vy: (haze ? -0.015 : -0.04) - Math.random() * (haze ? 0.05 : 0.16),
+        : (0.04 + Math.random() * (ground ? 0.22 : 0.16)) * z,
+      // El viento sopla de izquierda a derecha, hacia donde se pone el sol
+      vx: haze ? 0.04 + Math.random() * 0.08 : ground ? 0.5 + Math.random() * 0.9 : 0.08 + Math.random() * 0.22,
+      vy: (Math.random() - 0.55) * (haze ? 0.04 : ground ? 0.05 : 0.1),
       phase: Math.random() * Math.PI * 2,
       spin: haze ? 0.05 + Math.random() * 0.15 : 0.15 + Math.random() * 0.5,
+      ground,
+      haze,
     };
   }
 
@@ -148,8 +161,8 @@ export function initDust(canvas: HTMLCanvasElement): void {
     tone.b += (toneTarget.b - tone.b) * 0.05;
     buildSprite();
 
-    // Viento base: una oscilación lenta, como el aire de la tarde
-    wind = Math.sin(t * 0.7) * 0.09 + Math.sin(t * 0.23) * 0.05;
+    // Viento base: sopla siempre hacia el mismo lado y respira en rachas
+    wind = 0.12 + Math.sin(t * 0.7) * 0.1 + Math.max(0, Math.sin(t * 0.23)) * 0.16;
 
     // La ráfaga se disipa sola
     gust *= 0.94;
@@ -162,6 +175,7 @@ export function initDust(canvas: HTMLCanvasElement): void {
 
     const turbulence = 1 + gust * 5;
     const push = gust * gustDir * 7;
+    const gTop = groundTop();
 
     for (let i = 0; i < motes.length; i++) {
       const m = motes[i]!;
@@ -170,20 +184,24 @@ export function initDust(canvas: HTMLCanvasElement): void {
       m.phase += 0.008 * m.spin;
       const sway = Math.sin(m.phase) * 0.35 * m.z * turbulence;
 
-      m.x += (m.vx + wind * m.z + sway) * dpr;
-      m.y += (m.vy * turbulence - push * m.z) * dpr;
+      // La arena rasante acelera mucho más con las rachas que el aire de arriba
+      const drift = m.ground ? m.vx * (1 + wind * 4 + gust * 6) : m.vx + wind * m.z;
+      const dx = (drift + gust * 4 * m.z + sway) * dpr;
+      const dy = (m.vy * turbulence - push * m.z * (m.ground ? 0.3 : 1)) * dpr;
+      m.x += dx;
+      m.y += dy;
 
       // El cursor aparta el polvo
       if (pointer.active) {
-        const dx = m.x - pointer.x;
-        const dy = m.y - pointer.y;
-        const d2 = dx * dx + dy * dy;
+        const px = m.x - pointer.x;
+        const py = m.y - pointer.y;
+        const d2 = px * px + py * py;
         const radius = 150 * dpr;
         if (d2 < radius * radius && d2 > 0.01) {
           const d = Math.sqrt(d2);
           const force = (1 - d / radius) * 2.2 * m.z;
-          m.x += (dx / d) * force;
-          m.y += (dy / d) * force;
+          m.x += (px / d) * force;
+          m.y += (py / d) * force;
         }
       }
 
@@ -191,12 +209,33 @@ export function initDust(canvas: HTMLCanvasElement): void {
       const margin = 60 * dpr;
       if (m.x < -margin) m.x = width + margin;
       else if (m.x > width + margin) m.x = -margin;
-      if (m.y < -margin) m.y = height + margin;
+      if (m.ground) {
+        // La arena rasante no sube al cielo: rebota dentro de su franja
+        if (m.y < gTop - margin) m.y = height;
+        else if (m.y > height + margin) m.y = gTop;
+      } else if (m.y < -margin) m.y = height + margin;
       else if (m.y > height + margin) m.y = -margin;
 
       const s = m.size * (1 + gust * 0.7);
-      ctx!.globalAlpha = Math.min(1, m.alpha * (1 + gust * 1.3));
-      ctx!.drawImage(sprite, m.x - s, m.y - s, s * 2, s * 2);
+      // Más densa cuanto más cerca del suelo
+      const floor = m.ground ? 0.5 + ((m.y - gTop) / (height - gTop)) * 0.8 : 1;
+      ctx!.globalAlpha = Math.min(1, m.alpha * floor * (1 + gust * 1.3));
+
+      if (m.haze) {
+        ctx!.drawImage(sprite, m.x - s, m.y - s, s * 2, s * 2);
+      } else {
+        // El grano se estira en la dirección del viaje: una estela, no un punto
+        const speed = Math.hypot(dx, dy) / dpr;
+        // Sólo la arena rasante se alarga de verdad; la del aire apenas,
+        // o el cielo parece lluvia
+        const stretch = m.ground ? 1 + Math.min(speed * 1.4, 6) : 1 + Math.min(speed * 0.6, 1.4);
+        const a = Math.atan2(dy, dx);
+        const cos = Math.cos(a);
+        const sin = Math.sin(a);
+        ctx!.setTransform(cos * stretch, sin * stretch, -sin, cos, m.x, m.y);
+        ctx!.drawImage(sprite, -s, -s, s * 2, s * 2);
+        ctx!.setTransform(1, 0, 0, 1, 0, 0);
+      }
     }
 
     ctx!.globalAlpha = 1;

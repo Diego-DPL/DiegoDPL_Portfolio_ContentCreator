@@ -3,7 +3,7 @@ import { work } from '~/data/site';
 import DustFrame from '~/components/DustFrame.astro';
 ---
 
-<section class="rail" id="trabajo" data-tone="night" data-rail>
+<section class="rail" id="trabajo" data-tone="night" data-rail data-chapter="Lo rodado">
   <div class="rail__viewport">
     <div class="rail__track" data-rail-track>
       <!-- Panel de entrada -->
@@ -28,7 +28,7 @@ import DustFrame from '~/components/DustFrame.astro';
             <div class="card__media">
               <DustFrame
                 src={item.image}
-                alt={`${item.title} — ${item.client}`}
+                alt={item.alt}
                 format={item.format}
                 label={item.title}
                 position={item.position ?? '50% 50%'}

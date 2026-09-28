@@ -4,6 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { initDust } from './dust';
 import { initReveals, initCounters, initMarquees } from './scroll';
+import { initHorizon } from './horizon';
+import { initJourney } from './journey';
+import { initWind } from './wind';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -287,6 +290,22 @@ function initChoreography(): void {
     });
   }
 
+  /* — El desierto: la foto se acerca despacio, como quien camina hacia ella — */
+  const desert = document.querySelector<HTMLElement>('.dst__media img');
+  if (desert) {
+    // GSAP escribe el transform en cada frame: una transición CSS sobre él lo emborronaría
+    desert.style.transition = 'clip-path 1.25s var(--ease-dust)';
+    gsap.fromTo(
+      desert,
+      { scale: 1.14 },
+      {
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: desert.closest('section'), start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+      },
+    );
+  }
+
   /* — Parallax suelto: cualquier elemento con data-parallax — */
   document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
     const strength = Number(el.dataset.parallax || 12);
@@ -438,11 +457,14 @@ function boot(): void {
   initContactForm();
   initCounters();
   initMarquees();
+  initJourney();
+  initWind();
 
   initPreloader(() => {
     document.body.classList.add('is-ready');
     initReveals();
     initChoreography();
+    initHorizon();
     ScrollTrigger.refresh();
     // El polvo se levanta al empezar el viaje
     (window as unknown as { dustGust?: (p?: number) => void }).dustGust?.(0.85);
