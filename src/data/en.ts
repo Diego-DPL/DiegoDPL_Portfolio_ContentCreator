@@ -39,38 +39,60 @@ export const en = {
       caption:
         'The minute after the last kilometre. Nobody films this one, and it is the only one that says anything true.',
       capability: ['Backlight', 'Location portrait'],
+      alt: 'Runner lying on his back on the asphalt, catching his breath after a run',
     },
     {
       title: 'Out of breath',
       caption:
         'Low angle against open sky. Good for technical apparel: the garment is worn and under real effort, not hanging in a studio.',
       capability: ['Low angle', 'Product in use'],
+      alt: 'Low-angle shot of a runner in a cap, sunglasses and hydration vest breathing against a blue sky',
     },
     {
       title: 'The trail from above',
       caption:
         'Drone at dusk. The scale of the terrain and one small figure — the frame that turns an ordinary run into a story.',
       capability: ['Drone', 'Landscape'],
+      alt: 'Aerial view of a dirt trail winding across a scrubland hillside at dusk',
     },
     {
       title: 'When the wind drops',
       caption:
         'Last light on flat water. The clean frame that opens a campaign, or lets a feed breathe between harder pieces.',
       capability: ['Landscape', 'Golden hour'],
+      alt: 'Calm sea at sunset, an island on the horizon and clouds tinged pink',
     },
     {
       title: 'Blue hour',
       caption:
         'The twenty minutes before sunrise. Cold light, no hard shadows, and very few people willing to get up for it.',
       capability: ['Blue hour', 'Tracking shot'],
+      alt: 'Runner seen from behind on a dirt track before sunrise, with the valley and mountains beyond',
     },
     {
       title: 'Loose ground',
       caption:
         'Handheld, running behind. When a brand wants real movement instead of a pose, this is how it gets shot.',
       capability: ['Handheld', 'Motion'],
+      alt: 'Runner seen from behind on a trail through dry scrub, with the sierra in the background',
     },
   ],
+
+  /**
+   * Advertising-law credential. Deliberately NOT translated as "state
+   * certified": AUTOCONTROL is Spain's advertising self-regulation body,
+   * not a public authority. Dates and the PDF live in site.ts.
+   */
+  cert: {
+    fact: 'Certified in Spanish advertising law',
+    label: 'AUTOCONTROL certificate',
+    name: 'Basic training for influencers on advertising regulation',
+    issuer: 'Spanish Association for Advertising Self-Regulation',
+    valid: 'Valid until February 2028',
+    heading: 'The small print, covered',
+    body:
+      'I hold AUTOCONTROL certification on advertising regulation for content creators. In practice: your campaign is labelled as advertising from the first frame, in the wording Spanish law expects, with no claim the brand cannot back up if asked.',
+  },
 
   metricLabels: ['Community', 'Views', 'Audience 25–44'],
   metricNotes: ['Instagram + TikTok', 'Last 30 days', 'Core group'],
@@ -128,6 +150,10 @@ export const en = {
     {
       q: 'Can we use the content in paid media?',
       a: 'Yes, if we agree it beforehand. Usage rights are set out in writing in the quote: where it runs, for how long and in which formats. No grey areas.',
+    },
+    {
+      q: 'Do you know how advertising must be disclosed in Spain?',
+      a: 'Yes, and it is certified: I hold AUTOCONTROL\'s basic training certificate for influencers on advertising regulation. Every paid piece is labelled as advertising from the start, in the format the rules require, with no claims the brand could not defend.',
     },
     {
       q: 'Do you travel to shoot?',

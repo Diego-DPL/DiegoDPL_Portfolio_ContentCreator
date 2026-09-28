@@ -1,9 +1,9 @@
 ---
-import { metrics, brands } from '~/data/site';
+import { metrics, brands, mediaKitPdf } from '~/data/site';
 import Marquee from '~/components/Marquee.astro';
 ---
 
-<section class="nums" data-tone="night">
+<section class="nums" data-tone="night" data-chapter="Para marcas">
   <Marquee items={brands} speed={0.35} class="nums__marquee" />
 
   <div class="shell nums__inner">
@@ -33,10 +33,16 @@ import Marquee from '~/components/Marquee.astro';
       }
     </ul>
 
-    <a href="/media-kit" class="btn btn--ghost nums__cta" data-magnetic>
-      Ver el media kit completo
-      <span aria-hidden="true">→</span>
-    </a>
+    <div class="nums__cta">
+      <a href="/media-kit" class="btn btn--ghost" data-magnetic>
+        Ver el media kit completo
+        <span aria-hidden="true">→</span>
+      </a>
+      <a href={mediaKitPdf.file} class="nums__pdf" download>
+        <span class="kicker">{mediaKitPdf.label}</span>
+        <span aria-hidden="true">↓</span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -86,5 +92,23 @@ import Marquee from '~/components/Marquee.astro';
   .nums__label { margin: 0.5rem 0 0; font-size: 0.95rem; }
   .nums__note { color: var(--fg-faint); }
 
-  .nums__cta { justify-self: start; }
+  .nums__cta {
+    justify-self: start;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+  }
+  .nums__pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.4s ease, border-color 0.4s ease;
+  }
+  .nums__pdf:hover,
+  .nums__pdf:focus-visible { color: var(--fg); border-color: var(--accent); }
 </style>

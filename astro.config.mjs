@@ -27,6 +27,9 @@ export default defineConfig({
   site: 'https://diegodpl.com',
   integrations: [
     sitemap({
+      // La hoja imprimible es el molde del PDF, no una página del sitio:
+      // indexarla sería competir contra /media-kit con contenido calcado.
+      filter: (page) => !page.includes('/media-kit/pdf'),
       serialize(item) {
         const ruta = new URL(item.url).pathname;
 

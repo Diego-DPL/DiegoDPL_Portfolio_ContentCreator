@@ -2,7 +2,7 @@
 import Base from '~/layouts/Base.astro';
 import Marquee from '~/components/Marquee.astro';
 import DustFrame from '~/components/DustFrame.astro';
-import { site, metrics, audience, services, brands, faqs } from '~/data/site';
+import { site, metrics, audience, services, brands, faqs, certification, mediaKitPdf } from '~/data/site';
 import cenital from '~/assets/media/cenital.jpg';
 const schema = [
   // Cada servicio como Service, para que Google sepa que ofreces esto
@@ -14,6 +14,17 @@ const schema = [
     provider: { '@id': `${site.url}/#diego` },
     areaServed: { '@type': 'Country', name: 'España' },
   })),
+  {
+    '@type': 'EducationalOccupationalCredential',
+    '@id': `${site.url}/#certificado-autocontrol`,
+    name: certification.name,
+    credentialCategory: 'certificate',
+    recognizedBy: { '@type': 'Organization', name: certification.issuerFull, url: certification.issuerUrl },
+    dateCreated: certification.issued,
+    expires: certification.expires,
+    url: `${site.url}${certification.file}`,
+    about: { '@id': `${site.url}/#diego` },
+  },
   {
     '@type': 'FAQPage',
     mainEntity: faqs.map((f) => ({
@@ -51,6 +62,14 @@ const schema = [
         una estética documental analógica. Sin equipo intermedio: hablas conmigo
         y de mí sale la pieza terminada.
       </p>
+
+      <div class="mk-hero__actions" data-reveal style="--rv-delay:.24s">
+        <a class="btn" href={mediaKitPdf.file} download data-magnetic>
+          {mediaKitPdf.label}
+          <span aria-hidden="true">↓</span>
+        </a>
+        <span class="kicker mk-hero__note">{mediaKitPdf.note}</span>
+      </div>
     </div>
   </section>
 
@@ -168,6 +187,17 @@ const schema = [
           <li><span><strong>Entrego.</strong> Máster, verticales, fotos y copy. Con derechos claros.</span></li>
           <li><span><strong>Medimos.</strong> Informe real a los treinta días. Sin adornos.</span></li>
         </ol>
+
+        <div class="mk-cert" data-reveal style="--rv-delay:.24s">
+          <p class="kicker mk-cert__label">Y la letra pequeña, cubierta</p>
+          <p class="mk-cert__body">{certification.body}</p>
+          <a class="mk-cert__link" href={certification.file} target="_blank" rel="noopener">
+            <span class="kicker">{certification.short}</span>
+            <span class="mk-cert__meta">{certification.validLabel}</span>
+            <span aria-hidden="true">→</span>
+            <span class="sr-only">Abrir el certificado en PDF</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -203,6 +233,9 @@ const schema = [
       <div class="mk-cta__actions" data-reveal style="--rv-delay:.1s">
         <a href="/#contacto" class="btn" data-magnetic>Escríbeme <span aria-hidden="true">→</span></a>
         <a href={`mailto:${site.email}`} class="btn btn--ghost" data-magnetic>{site.email}</a>
+        <a href={mediaKitPdf.file} class="btn btn--ghost" download data-magnetic>
+          {mediaKitPdf.label} <span aria-hidden="true">↓</span>
+        </a>
       </div>
     </div>
   </section>
@@ -218,6 +251,14 @@ const schema = [
   .mk-hero__title { margin: 1rem 0 1.5rem; }
   .mk-hero__title em { font-style: italic; color: var(--color-ochre); }
   .mk-hero__lede { max-width: 46ch; margin: 0; }
+  .mk-hero__actions {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+  .mk-hero__note { color: var(--fg-faint); }
 
   .mk-head {
     display: flex;
@@ -342,6 +383,44 @@ const schema = [
     padding-top: 0.4em;
   }
   .mk-steps strong { color: var(--fg); font-weight: 500; }
+
+  /* — La credencial de normativa publicitaria — */
+  .mk-cert {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    gap: 1rem;
+    max-width: 52ch;
+  }
+  .mk-cert__label { margin: 0; color: var(--accent); }
+  .mk-cert__body {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--fg-muted);
+    text-wrap: pretty;
+  }
+  .mk-cert__link {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+    justify-self: start;
+    padding-bottom: 0.35rem;
+    text-decoration: none;
+    color: var(--fg);
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.4s ease;
+  }
+  .mk-cert__link:hover,
+  .mk-cert__link:focus-visible { border-color: var(--accent); }
+  .mk-cert__meta { font-size: 0.85rem; color: var(--fg-faint); }
+  .mk-cert__link [aria-hidden] {
+    display: inline-block;
+    color: var(--accent);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .mk-cert__link:hover [aria-hidden] { transform: translateX(0.25rem); }
 
   /* — Preguntas — */
   .mk-faq { padding-block: clamp(5rem, 10vw, 10rem); }

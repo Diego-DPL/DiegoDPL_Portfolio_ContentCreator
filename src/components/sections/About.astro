@@ -1,5 +1,5 @@
 ---
-import { site } from '~/data/site';
+import { site, certification } from '~/data/site';
 import DustFrame from '~/components/DustFrame.astro';
 import casaSierra from '~/assets/media/casa-sierra.jpg';
 
@@ -8,10 +8,11 @@ const ficha = [
   { label: 'Disciplinas', value: 'Dirección · Foto · Edición' },
   { label: 'Idiomas', value: site.languages.join(' · ') },
   { label: 'Estética', value: 'Documental analógica' },
+  { label: 'Certificación', value: certification.claim },
 ];
 ---
 
-<section class="about" id="sobre-mi" data-tone="day">
+<section class="about" id="sobre-mi" data-tone="day" data-chapter="Quién corre">
   <div class="shell about__grid">
     <div class="about__media">
       <DustFrame
@@ -53,6 +54,11 @@ const ficha = [
           se alquila por una publicación. Se construye igual que todo lo demás:
           apareciendo, otra vez, al día siguiente.
         </p>
+        <p>
+          Y esa confianza también se cuida en la letra pequeña: estoy certificado
+          por AUTOCONTROL en normativa publicitaria, así que lo que es publicidad
+          se dice que es publicidad.
+        </p>
       </div>
 
       <dl class="about__ficha" data-reveal style="--rv-delay:.24s">
@@ -65,6 +71,31 @@ const ficha = [
           ))
         }
       </dl>
+
+      <a
+        class="cert"
+        href={certification.file}
+        target="_blank"
+        rel="noopener"
+        data-reveal
+        style="--rv-delay:.3s"
+      >
+        <span class="cert__seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M12 2.5 14.6 5l3.5-.3.4 3.5L21 10.6l-1.7 3 .6 3.4-3.4.9-2 2.9-3.2-1.4-3.2 1.4-2-2.9-3.4-.9.6-3.4L1.6 10.6 4.5 8.2l.4-3.5L8.4 5 12 2.5Z" stroke-linejoin="round" />
+            <path d="m9 12.2 2.1 2.1 4-4.3" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="cert__text">
+          <span class="kicker cert__label">{certification.short}</span>
+          <span class="cert__name">{certification.name}</span>
+          <span class="kicker cert__meta">
+            {certification.issuerFull} · {certification.validLabel}
+          </span>
+        </span>
+        <span class="kicker cert__cta" aria-hidden="true">Ver <span>→</span></span>
+        <span class="sr-only">Abrir el certificado en PDF</span>
+      </a>
     </div>
   </div>
 </section>
@@ -116,4 +147,50 @@ const ficha = [
     border-top: 1px solid var(--rule);
   }
   .about__ficha-row dd { margin: 0; font-size: 0.95rem; text-align: right; }
+
+  /* — El sello: enlaza al PDF del certificado — */
+  .cert {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.1rem;
+    max-width: 34rem;
+    padding: 1.1rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--rule);
+    transition: border-color 0.4s ease, background-color 0.4s ease;
+  }
+  .cert:hover,
+  .cert:focus-visible { border-color: var(--accent); }
+
+  .cert__seal {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--accent);
+  }
+  .cert__seal svg { width: 100%; height: 100%; }
+
+  .cert__text { display: grid; gap: 0.2rem; min-width: 0; }
+  .cert__label { color: var(--fg-faint); }
+  .cert__name {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+  .cert__meta { color: var(--fg-faint); text-transform: none; letter-spacing: 0.04em; }
+
+  .cert__cta { color: var(--fg-muted); white-space: nowrap; }
+  .cert__cta span {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .cert:hover .cert__cta span { transform: translateX(0.25rem); }
+
+  @media (max-width: 480px) {
+    .cert { grid-template-columns: auto minmax(0, 1fr); }
+    .cert__cta { display: none; }
+  }
 </style>

@@ -1,0 +1,388 @@
+---
+/**
+ * HOJA IMPRIMIBLE DEL MEDIA KIT — el origen del PDF descargable.
+ *
+ * Esta página no es para visitantes: es el molde del que Chrome saca
+ * `public/media-kit-diego-dpl.pdf`. Se regenera con:
+ *
+ *     npm run media-kit
+ *
+ * Tres hojas A4 exactas. Todo el contenido sale de `site.ts`, así que el
+ * PDF no puede desincronizarse de la web: cambia un número allí, vuelve a
+ * lanzar el comando y el PDF lo lleva.
+ *
+ * Lleva `noindex` y está fuera del sitemap a propósito: si Google la
+ * indexara competiría con /media-kit, que es la buena.
+ */
+import { Image } from 'astro:assets';
+import '~/styles/global.css';
+import { site, socials, metrics, audience, services, certification } from '~/data/site';
+import portada from '~/assets/media/camino-al-anochecer.jpg';
+import retrato from '~/assets/media/diego-super8.jpg';
+
+const fmt = (n: number) =>
+  n.toLocaleString('es-ES', {
+    maximumFractionDigits: Number.isInteger(n) ? 0 : 1,
+    // Sin esto el español deja 2600 sin punto: agrupa a partir de 5 cifras
+    useGrouping: 'always',
+  });
+
+const pasos = [
+  ['Hablamos', 'Qué quieres contar y a quién. Media hora basta.'],
+  ['Propongo', 'Concepto, referencias, formatos y presupuesto cerrado.'],
+  ['Rodamos', 'Yo me encargo de todo. Tú validas una sola vez.'],
+  ['Entrego', 'Máster, verticales, fotos y copy. Con derechos claros.'],
+  ['Medimos', 'Informe real a los treinta días. Sin adornos.'],
+];
+
+const año = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Media kit — {site.name}</title>
+  </head>
+  <body>
+    <!-- ───────────── Hoja 1 · Portada ───────────── -->
+    <section class="sheet sheet--cover" data-tone="night">
+      <div class="cover__img">
+        <Image src={portada} alt="" widths={[1200]} quality={82} />
+        <span class="cover__veil"></span>
+      </div>
+
+      <header class="cover__top">
+        <span class="mono">Media kit · {año}</span>
+        <span class="mono">{site.coords}</span>
+      </header>
+
+      <div class="cover__body">
+        <p class="mono cover__role">{site.role}</p>
+        <h1 class="cover__name">Diego<br />DPL</h1>
+        <p class="cover__claim">
+          Running, viajes y la clase de historias que sólo se cuentan
+          <em>después</em> de haberlas caminado.
+        </p>
+      </div>
+
+      <footer class="cover__foot">
+        <div>
+          <p class="mono lbl">Contacto</p>
+          <p>{site.email}</p>
+          <p>{site.url.replace('https://', '')}</p>
+        </div>
+        <div>
+          <p class="mono lbl">Redes</p>
+          {socials.map((s) => <p>{s.label} · {s.handle}</p>)}
+        </div>
+        <div>
+          <p class="mono lbl">Base</p>
+          <p>{site.location}</p>
+          <p class="faint">Disponible para viajar</p>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ───────────── Hoja 2 · Audiencia ───────────── -->
+    <section class="sheet" data-tone="day">
+      <header class="sh__head">
+        <span class="mono">01 — La audiencia</span>
+        <span class="sh__rule"></span>
+        <span class="mono faint">{site.name}</span>
+      </header>
+
+      <ul class="mx">
+        {
+          metrics.map((m) => (
+            <li>
+              <p class="mx__v">
+                {fmt(m.value)}{m.suffix && <span class="mx__s">{m.suffix}</span>}
+              </p>
+              <p class="mx__l">{m.label}</p>
+              {m.note && <p class="mono faint">{m.note}</p>}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="split">
+        <div>
+          <p class="mono lbl">Quién me ve</p>
+          <ul class="bars">
+            {
+              audience.map((a) => (
+                <li>
+                  <span class="bars__l">{a.label}</span>
+                  <span class="bars__t"><span class="bars__f" style={`width:${a.value}%`}></span></span>
+                  <span class="mono bars__v">{fmt(a.value)}%</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mono faint src">
+            Instagram Insights y TikTok Analytics · Actualizado cada trimestre
+          </p>
+        </div>
+
+        <div class="note">
+          <p>
+            Los números importan menos que quién hay detrás. Mi comunidad es gente
+            que entrena, que viaja y que compra material porque lo usa — no porque
+            lo haya visto pasar.
+          </p>
+          <div class="por">
+            <Image src={retrato} alt="" widths={[520]} quality={80} />
+          </div>
+        </div>
+      </div>
+
+      <div class="how">
+        <p class="mono lbl">Cómo trabajo</p>
+        <ol class="how__l">
+          {
+            pasos.map(([k, v]) => (
+              <li><span><strong>{k}.</strong> {v}</span></li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <p class="pg mono">2 / 3</p>
+    </section>
+
+    <!-- ───────────── Hoja 3 · Servicios ───────────── -->
+    <section class="sheet" data-tone="night">
+      <header class="sh__head">
+        <span class="mono">02 — Servicios y método</span>
+        <span class="sh__rule"></span>
+        <span class="mono faint">{site.name}</span>
+      </header>
+
+      <ul class="sv">
+        {
+          services.map((s) => (
+            <li>
+              <span class="mono faint sv__i">{s.index}</span>
+              <div>
+                <h2 class="sv__t">{s.title}</h2>
+                <p class="sv__b">{s.body}</p>
+              </div>
+              <ul class="sv__inc">
+                {s.includes.map((i) => <li class="mono">{i}</li>)}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- La credencial: para el departamento legal de la marca, no para el creativo -->
+      <div class="cert">
+        <p class="mono lbl">Normativa publicitaria</p>
+        <p class="cert__name">{certification.name}</p>
+        <p class="mono faint">
+          {certification.issuerFull} ({certification.issuer}) · {certification.validLabel}
+        </p>
+      </div>
+
+      <footer class="end">
+        <p class="end__t">¿Empezamos?</p>
+        <p class="end__c">{site.email} · {site.url.replace('https://', '')}</p>
+      </footer>
+
+      <p class="pg mono">3 / 3</p>
+    </section>
+  </body>
+</html>
+
+<style is:global>
+  /* ============================================================
+     PDF — tres hojas A4 clavadas. Nada de svh, vw ni clamp():
+     en papel no hay viewport que valga, todo va en milímetros.
+     ============================================================ */
+  @page { size: A4; margin: 0; }
+
+  html, body { margin: 0; padding: 0; background: #fff; }
+
+  body {
+    font-family: var(--font-sans);
+    /* Sin esto Chrome imprime los fondos en blanco y se pierde el diseño */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    padding: 18mm 16mm 14mm;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    break-after: page;
+    page-break-after: always;
+  }
+  .sheet:last-child { break-after: auto; page-break-after: auto; }
+
+  /* En pantalla se ven como hojas sueltas; al imprimir, esto no cuenta */
+  @media screen {
+    body { background: #6b6b6b; padding: 10mm 0; }
+    .sheet { margin: 0 auto 10mm; box-shadow: 0 2mm 8mm rgb(0 0 0 / 0.35); }
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 6.5pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .lbl { color: var(--accent); margin: 0 0 3mm; }
+  .faint { color: var(--fg-faint); }
+  p { margin: 0; }
+
+  .pg { position: absolute; right: 16mm; bottom: 8mm; color: var(--fg-faint); }
+
+  /* — Hoja 1 — */
+  .sheet--cover { justify-content: space-between; padding-top: 14mm; }
+  .cover__img { position: absolute; inset: 0; z-index: 0; }
+  .cover__img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+  .cover__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      176deg,
+      rgb(11 9 7 / 0.38) 0%,
+      rgb(11 9 7 / 0.30) 34%,
+      rgb(11 9 7 / 0.82) 72%,
+      rgb(11 9 7 / 0.96) 100%
+    );
+  }
+  .cover__top,
+  .cover__body,
+  .cover__foot { position: relative; z-index: 1; }
+
+  .cover__top { display: flex; justify-content: space-between; color: var(--color-sand-200); }
+
+  .cover__body { margin-top: auto; }
+  .cover__role { color: var(--color-ochre); margin-bottom: 6mm; }
+  .cover__name {
+    font-family: var(--font-display);
+    font-size: 64pt;
+    line-height: 0.86;
+    margin: 0 0 8mm;
+    color: var(--color-sand-50);
+  }
+  .cover__claim {
+    font-family: var(--font-display);
+    font-size: 15pt;
+    line-height: 1.32;
+    max-width: 105mm;
+    color: var(--color-sand-100);
+  }
+  .cover__claim em { color: var(--color-ochre); }
+
+  .cover__foot {
+    margin-top: 14mm;
+    padding-top: 5mm;
+    border-top: 0.3mm solid rgb(224 211 191 / 0.28);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6mm;
+    font-size: 8.5pt;
+    line-height: 1.55;
+    color: var(--color-sand-200);
+  }
+
+  /* — Cabecera de hoja interior — */
+  .sh__head { display: flex; align-items: center; gap: 4mm; margin-bottom: 10mm; }
+  .sh__rule { flex: 1; height: 0.3mm; background: var(--rule); }
+
+  /* — Métricas — */
+  .mx { list-style: none; margin: 0 0 10mm; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .mx > li { padding: 4mm 4mm 4mm 0; border-top: 0.3mm solid var(--rule); }
+  .mx > li + li { padding-left: 5mm; border-left: 0.3mm solid var(--rule); }
+  .mx__v {
+    font-family: var(--font-display);
+    font-size: 34pt;
+    line-height: 0.92;
+    font-variant-numeric: tabular-nums;
+  }
+  .mx__s { color: var(--accent); }
+  .mx__l { font-size: 9pt; margin-top: 1.5mm; }
+
+  /* — Barras + nota — */
+  .split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 10mm; }
+  .split > div:first-child { display: grid; align-content: start; }
+  .bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 3.5mm; }
+  .bars > li { display: grid; grid-template-columns: 28mm 1fr 12mm; align-items: center; gap: 3mm; }
+  .bars__l { font-size: 8.5pt; }
+  .bars__t { height: 0.6mm; background: var(--rule); }
+  .bars__f { display: block; height: 100%; background: var(--accent); }
+  .bars__v { color: var(--fg-muted); text-align: right; }
+  .src { margin-top: 5mm; }
+
+  .note { display: grid; gap: 5mm; align-content: start; }
+  .note > p { font-size: 9.5pt; line-height: 1.6; color: var(--fg-muted); }
+  .por { height: 58mm; overflow: hidden; }
+  .por img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+
+  /* — Certificación — */
+  .cert { margin-top: auto; padding-top: 6mm; border-top: 0.3mm solid var(--rule); }
+  .cert__name { font-family: var(--font-display); font-size: 13pt; line-height: 1.25; margin-bottom: 1.5mm; }
+
+  /* — Servicios — */
+  .sv { list-style: none; margin: 0 0 9mm; padding: 0; }
+  .sv > li {
+    display: grid;
+    grid-template-columns: 10mm 1fr 42mm;
+    gap: 4mm;
+    padding: 4.5mm 0;
+    border-top: 0.3mm solid var(--rule);
+    align-items: start;
+  }
+  .sv > li:last-child { border-bottom: 0.3mm solid var(--rule); }
+  .sv__i { padding-top: 1.5mm; }
+  .sv__t { font-family: var(--font-display); font-size: 14pt; margin: 0 0 1.5mm; font-weight: 400; }
+  .sv__b { font-size: 8.8pt; line-height: 1.55; color: var(--fg-muted); }
+  .sv__inc { list-style: none; margin: 0; padding: 1mm 0 0; display: grid; gap: 1.6mm; }
+  .sv__inc li { color: var(--fg-muted); }
+  .sv__inc li::before { content: '— '; color: var(--accent); }
+
+  /* — Método — */
+  .how { margin-top: auto; padding-top: 9mm; }
+  .how__l { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; }
+  .how__l li {
+    counter-increment: s;
+    display: grid;
+    grid-template-columns: 9mm 1fr;
+    gap: 2mm;
+    padding: 2.6mm 0;
+    border-top: 0.3mm solid var(--rule);
+    font-size: 9pt;
+    line-height: 1.5;
+    color: var(--fg-muted);
+  }
+  .how__l li::before {
+    content: '0' counter(s);
+    font-family: var(--font-mono);
+    font-size: 6.5pt;
+    letter-spacing: 0.15em;
+    color: var(--fg-faint);
+    padding-top: 0.9mm;
+  }
+  .how__l strong { color: var(--fg); font-weight: 500; }
+
+  /* — Cierre — */
+  .end {
+    margin-top: auto;
+    padding-top: 7mm;
+    border-top: 0.3mm solid var(--rule);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6mm;
+  }
+  .end__t { font-family: var(--font-display); font-size: 26pt; }
+  .end__c { font-size: 9.5pt; color: var(--accent); }
+</style>
