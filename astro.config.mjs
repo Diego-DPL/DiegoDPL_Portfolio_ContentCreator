@@ -50,6 +50,8 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   build: {
-    inlineStylesheets: 'auto',
+    // Sitio estático y pequeño: el CSS dentro del HTML evita tres peticiones
+    // que bloqueaban el primer pintado (~900 ms en móvil según Lighthouse)
+    inlineStylesheets: 'always',
   },
 });

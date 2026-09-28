@@ -7,6 +7,7 @@ import { initReveals, initCounters, initMarquees } from './scroll';
 import { initHorizon } from './horizon';
 import { initJourney } from './journey';
 import { initWind } from './wind';
+import { initStorm } from './storm';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,12 +75,13 @@ function initPreloader(onDone: () => void): void {
     onDone();
   };
 
-  if (REDUCED) {
+  // Si llegas desde otra página del sitio, ya amaneció: nada de repetirlo
+  if (REDUCED || document.documentElement.classList.contains('is-arriving')) {
     finish();
     return;
   }
 
-  const duration = 1500;
+  const duration = 2100;
 
   // Red de seguridad: requestAnimationFrame se congela en pestañas de fondo,
   // así que un temporizador garantiza que la web nunca se quede bloqueada
@@ -90,7 +92,9 @@ function initPreloader(onDone: () => void): void {
   const step = (now: number): void => {
     const p = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - p, 3);
-    if (num) num.textContent = String(Math.round(eased * 100)).padStart(3, '0');
+    el.style.setProperty('--p', eased.toFixed(3));
+    // De 05:30 a 06:00: la media hora en la que ya estás en la calle y aún no hay nadie
+    if (num) num.textContent = eased >= 1 ? '06:00' : `05:${String(30 + Math.floor(eased * 30)).padStart(2, '0')}`;
     if (p < 1) requestAnimationFrame(step);
     else window.setTimeout(finish, 220);
   };
@@ -211,6 +215,22 @@ function initChoreography(): void {
     }
   }
 
+  /* — Amanecer: el sol sube mientras cruzas la noche — */
+  document.querySelectorAll<HTMLElement>('[data-dawn]').forEach((dawn) => {
+    const sun = dawn.querySelector('[data-dawn-sun]');
+    if (!sun) return;
+    gsap.fromTo(
+      sun,
+      { yPercent: 55, scale: 0.8 },
+      {
+        yPercent: -35,
+        scale: 1.1,
+        ease: 'none',
+        scrollTrigger: { trigger: dawn, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
+      },
+    );
+  });
+
   /* — Manifiesto: el texto se revela palabra a palabra con el scroll — */
   document.querySelectorAll<HTMLElement>('[data-split="scrub"]').forEach((el) => {
     const units = el.querySelectorAll<HTMLElement>('.split-unit');
@@ -225,6 +245,54 @@ function initChoreography(): void {
       scrollTrigger: { trigger: el, start: 'top 78%', end: 'bottom 55%', scrub: 0.8 },
     });
   });
+
+  /* — El desierto: se queda fijo y la frase se enfoca palabra a palabra —
+     Va antes que el carril horizontal: los anclajes se calculan en el orden
+     en que se crean, y este está más arriba en la página. */
+  const desert = document.querySelector<HTMLElement>('[data-desert]');
+  if (desert) {
+    const media = desert.querySelector<HTMLElement>('.dst__media');
+    const img = desert.querySelector<HTMLElement>('.dst__media img');
+    const words = desert.querySelectorAll<HTMLElement>('[data-word]');
+    const after = desert.querySelector<HTMLElement>('[data-desert-after]');
+
+    // Al acercarte, la foto viene hacia ti
+    if (media) {
+      gsap.fromTo(
+        media,
+        { scale: 1.1 },
+        {
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: { trigger: desert, start: 'top bottom', end: 'top top', scrub: 1 },
+        },
+      );
+    }
+
+    // GSAP escribe el transform en cada frame: una transición CSS sobre él lo emborronaría
+    if (img) img.style.transition = 'clip-path 1.25s var(--ease-dust)';
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: desert,
+        start: 'top top',
+        end: '+=120%',
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1,
+      },
+    });
+    if (img) tl.fromTo(img, { scale: 1.12 }, { scale: 1, ease: 'none', duration: 5 }, 0);
+    if (words.length) {
+      tl.fromTo(
+        words,
+        { opacity: 0.08, filter: 'blur(10px)', y: '0.3em' },
+        { opacity: 1, filter: 'blur(0px)', y: 0, ease: 'power2.out', duration: 1, stagger: 0.45 },
+        0.2,
+      );
+    }
+    if (after) tl.fromTo(after, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8 }, '>-0.1');
+  }
 
   /* — Galería horizontal anclada: el trabajo desfila lateralmente — */
   const rail = document.querySelector<HTMLElement>('[data-rail]');
@@ -288,22 +356,6 @@ function initChoreography(): void {
         );
       });
     });
-  }
-
-  /* — El desierto: la foto se acerca despacio, como quien camina hacia ella — */
-  const desert = document.querySelector<HTMLElement>('.dst__media img');
-  if (desert) {
-    // GSAP escribe el transform en cada frame: una transición CSS sobre él lo emborronaría
-    desert.style.transition = 'clip-path 1.25s var(--ease-dust)';
-    gsap.fromTo(
-      desert,
-      { scale: 1.14 },
-      {
-        scale: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: desert.closest('section'), start: 'top bottom', end: 'bottom top', scrub: 1.2 },
-      },
-    );
   }
 
   /* — Parallax suelto: cualquier elemento con data-parallax — */
@@ -459,6 +511,7 @@ function boot(): void {
   initMarquees();
   initJourney();
   initWind();
+  initStorm();
 
   initPreloader(() => {
     document.body.classList.add('is-ready');

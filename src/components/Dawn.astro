@@ -1,0 +1,84 @@
+---
+/**
+ * EL AMANECER
+ * -----------
+ * El puente entre el hero (atardecer que acaba en noche) y la primera
+ * sección de día. Sin él, la página pasaba de golpe del negro al papel.
+ * Ahora bajas a través de la noche, el cielo se enciende por abajo, sale
+ * un sol y llegas al día. Una frase lo dice: al día siguiente, otra vez.
+ *
+ * El sol sube con el scroll (main.ts, [data-dawn-sun]). Sin JavaScript
+ * se queda quieto y el degradado sigue funcionando igual.
+ */
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+---
+
+<div class="dawn" data-dawn aria-hidden="true">
+  <span class="dawn__sun" data-dawn-sun></span>
+  <p class="dawn__line kicker" data-reveal>
+    {lang === 'en' ? 'And the next day, again.' : 'Y al día siguiente, otra vez.'}
+  </p>
+</div>
+
+<style>
+  .dawn {
+    position: relative;
+    z-index: 1;
+    height: clamp(24rem, 78svh, 46rem);
+    /* el alto en svh sale con decimales: sin este solape asoma una raya
+       del fondo negro entre el amanecer y la sección de día */
+    margin-bottom: -2px;
+    overflow: hidden;
+    /* De la noche del hero al papel del manifiesto, pasando por la brasa */
+    background: linear-gradient(
+      180deg,
+      var(--color-ink-900) 0%,
+      #120B08 22%,
+      #2A1510 40%,
+      #5A2A1B 54%,
+      #9A4A2A 66%,
+      #D98446 77%,
+      #F1BE82 87%,
+      #F5E3C9 94%,
+      var(--color-sand-50) 100%
+    );
+  }
+
+  /* Un sol enorme y difuso: se intuye más que se ve */
+  .dawn__sun {
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    width: min(120vw, 70rem);
+    height: min(60vw, 32rem);
+    margin-left: calc(min(120vw, 70rem) / -2);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(255 222 170 / 0.75), rgb(242 154 82 / 0.28) 45%, transparent);
+    will-change: transform;
+  }
+
+  /* El último tramo se funde con el papel por encima del sol: si no, su
+     resplandor se corta en seco contra la sección siguiente */
+  .dawn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 32%;
+    background: linear-gradient(180deg, rgb(247 242 233 / 0), var(--color-sand-50) 92%);
+  }
+
+  .dawn__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 36%;
+    margin: 0;
+    text-align: center;
+    color: var(--color-sand-300);
+  }
+</style>

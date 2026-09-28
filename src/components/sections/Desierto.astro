@@ -5,16 +5,44 @@
  * Un respiro entre el manifiesto y el trabajo. Una sola imagen a sangre y
  * una sola frase: el tramo del camino en el que no hay nadie mirando.
  * La foto va casi entera porque su fuerza está en la escala.
+ *
+ * Con JavaScript, la sección se queda fija un tramo: la foto se acerca y la
+ * frase se enfoca palabra a palabra (main.ts). Es el único sitio de la web
+ * que te obliga a quedarte quieto, que es justo lo que se siente ahí.
  */
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+
+const t =
+  lang === 'en'
+    ? {
+        chapter: 'The desert',
+        kicker: 'The desert',
+        line: ['Out', 'here', 'nobody'],
+        lineEm: ['is', 'watching.'],
+        after: 'It is the only part that matters.',
+        alt: 'Diego DPL, tiny in the middle of the badlands, hands on his knees after a run',
+      }
+    : {
+        chapter: 'El desierto',
+        kicker: 'El desierto',
+        line: ['Aquí', 'no', 'hay', 'nadie'],
+        lineEm: ['que', 'te', 'vea.'],
+        after: 'Es la única parte que importa.',
+        alt: 'Diego DPL, diminuto en mitad de unos badlands, con las manos en las rodillas después de correr',
+      };
+const { line, lineEm } = t;
 import DustFrame from '~/components/DustFrame.astro';
 import elDesierto from '~/assets/media/el-desierto.jpg';
 ---
 
-<section class="dst" data-tone="night" data-chapter="El desierto">
-  <div class="dst__media" data-parallax="9">
+<section class="dst" data-tone="night" data-chapter={t.chapter} data-desert>
+  <div class="dst__media">
     <DustFrame
       src={elDesierto}
-      alt="Diego DPL, diminuto en mitad de unos badlands, con las manos en las rodillas después de correr"
+      alt={t.alt}
       format="landscape"
       sizes="100vw"
       widths={[720, 1100, 1500, 1900, 2160]}
@@ -29,17 +57,20 @@ import elDesierto from '~/assets/media/el-desierto.jpg';
   <div class="dst__scrim" aria-hidden="true"></div>
 
   <div class="dst__text shell">
-    <p class="kicker" data-reveal>El desierto</p>
-    <p class="dst__line display" data-reveal style="--rv-delay:.12s">
-      Aquí no hay nadie<br /><em>que te vea.</em>
+    <p class="kicker" data-reveal>{t.kicker}</p>
+    <p class="dst__line display">
+      {line.map((w, i) => <Fragment><span class="dst__w" data-word>{w}</span>{i < line.length - 1 && ' '}</Fragment>)}<br />
+      <em>{lineEm.map((w, i) => <Fragment><span class="dst__w" data-word>{w}</span>{i < lineEm.length - 1 && ' '}</Fragment>)}</em>
     </p>
+    <p class="dst__after kicker" data-desert-after>{t.after}</p>
   </div>
 </section>
 
 <style>
   .dst {
     position: relative;
-    min-height: min(86svh, 46rem);
+    /* pantalla entera: mientras está fija, no hay nada más */
+    min-height: 100svh;
     display: flex;
     align-items: flex-end;
     padding-block: clamp(3rem, 7vw, 6rem);
@@ -110,8 +141,10 @@ import elDesierto from '~/assets/media/el-desierto.jpg';
     text-wrap: balance;
   }
   .dst__line em { font-style: italic; color: var(--color-ochre); }
+  .dst__w { display: inline-block; }
+  .dst__after { margin: 0.5rem 0 0; color: var(--color-sand-300); }
 
   @media (min-width: 900px) {
-    .dst { min-height: min(94svh, 54rem); }
+    .dst { min-height: 100svh; }
   }
 </style>

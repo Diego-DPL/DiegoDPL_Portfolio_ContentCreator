@@ -25,6 +25,8 @@ export const en = {
     'Diego DPL is a running, travel and lifestyle content creator based in Murcia, Spain. He directs, shoots and edits his own work with a documentary, film-grain look. Available for brand campaigns across Europe and beyond.',
   claim:
     'Running, travel and the kind of stories you only tell after you have walked them.',
+  /** The same line for the hero, with the word that gets the serif accent */
+  claimHtml: 'Running, travel and the kind of stories you only tell <em>after</em> you have walked them.',
 
   intro: [
     'I direct, shoot and edit everything myself. No crew, no agency in the middle — you talk to the person doing the work, and the piece you approve is the piece that ships.',

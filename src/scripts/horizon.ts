@@ -102,6 +102,9 @@ export function initHorizon(): void {
   let visible = true;
   new IntersectionObserver(([entry]) => {
     visible = !!entry?.isIntersecting;
+    // La calima (SMIL) y el corredor siguen animándose fuera de pantalla si no se paran
+    if (visible) svg.unpauseAnimations();
+    else svg.pauseAnimations();
   }).observe(hero);
 
   let last = performance.now();

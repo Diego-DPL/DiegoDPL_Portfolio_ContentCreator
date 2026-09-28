@@ -38,8 +38,10 @@ let i = 0;
 <Tag
   class:list={[className]}
   data-split={mode === 'scrub' ? 'scrub' : unit}
-  aria-label={text}
 >
+  {/* Lo que lee el lector de pantalla: la frase entera, no palabra a palabra.
+      (aria-label no está permitido en un <p> sin rol, por eso va así.) */}
+  <span class="sr-only">{text}</span>
   {
     pieces.map((piece) => {
       if (/^\s+$/.test(piece)) return <Fragment>{piece}</Fragment>;

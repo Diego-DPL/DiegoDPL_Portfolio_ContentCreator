@@ -19,9 +19,10 @@ const path = Astro.url.pathname;
 
 <header class="nav" data-nav>
   <div class="nav__inner shell">
-    <a href="/" class="nav__mark" aria-label={`${site.name} — inicio`}>
+    <a href={lang === 'en' ? '/en/' : '/'} class="nav__mark">
       <span class="nav__mark-name">Diego DPL</span>
       <span class="nav__mark-role kicker">{lang === 'en' ? en.role : site.role}</span>
+      <span class="sr-only">{lang === 'en' ? '— home' : '— inicio'}</span>
     </a>
 
     <nav class="nav__links" aria-label={lang === 'en' ? 'Main' : 'Principal'}>
@@ -42,9 +43,9 @@ const path = Astro.url.pathname;
         class="nav__lang"
         hreflang={otro.lang}
         lang={otro.lang}
-        aria-label={otro.title}
       >
         <span class="link-dust">{otro.label}</span>
+        <span class="sr-only">— {otro.title}</span>
       </a>
     </nav>
 

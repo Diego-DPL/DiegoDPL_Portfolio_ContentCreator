@@ -10,9 +10,11 @@
 import Base from '~/layouts/Base.astro';
 import DustFrame from '~/components/DustFrame.astro';
 import Marquee from '~/components/Marquee.astro';
+import Hero from '~/components/sections/Hero.astro';
+import Dawn from '~/components/Dawn.astro';
+import Desierto from '~/components/sections/Desierto.astro';
 import { site, work, metrics, audience, socials, contact, certification } from '~/data/site';
 import { en } from '~/data/en';
-import retrato from '~/assets/media/diego-super8.jpg';
 import casaSierra from '~/assets/media/casa-sierra.jpg';
 
 const alternates = [
@@ -54,44 +56,17 @@ const brandsEn = [
 <Base
   title={en.title}
   description={en.description}
-  preload={false}
   lang="en"
   alternates={alternates}
   schema={schema}
   image="/og-media-kit.jpg"
 >
-  <!-- Opening -->
-  <section class="hd" data-tone="night">
-    <div class="shell hd__grid">
-      <div class="hd__text">
-        <p class="kicker">{en.role} · {en.location}</p>
-        <h1 class="hd__title display t-xl">
-          Diego<br /><em>DPL</em>
-        </h1>
-        <p class="lede hd__claim">{en.claim}</p>
-        <div class="hd__actions">
-          <a href="#contact" class="btn" data-magnetic>
-            Work with me <span aria-hidden="true">→</span>
-          </a>
-          <a href="/" class="btn btn--ghost" data-magnetic>Versión en español</a>
-        </div>
-      </div>
-
-      <div class="hd__media">
-        <DustFrame
-          src={retrato}
-          alt="Diego DPL shooting with a Super 8 camera on a clifftop"
-          format="portrait"
-          loading="eager"
-          sizes="(min-width: 900px) 32vw, 100vw"
-          position="52% 45%"
-        />
-      </div>
-    </div>
-  </section>
+  <!-- Opening: the same desert as the Spanish home, in English -->
+  <Hero lang="en" />
+  <Dawn lang="en" />
 
   <!-- Who -->
-  <section class="who" id="who" data-tone="day">
+  <section class="who" id="who" data-tone="day" data-chapter="Who runs">
     <div class="shell who__grid">
       <div class="who__media">
         <DustFrame
@@ -145,8 +120,10 @@ const brandsEn = [
     </div>
   </section>
 
+  <Desierto lang="en" />
+
   <!-- Work -->
-  <section class="wk" id="work" data-tone="night">
+  <section class="wk" id="work" data-tone="night" data-chapter="The work">
     <div class="shell">
       <header class="hd2">
         <p class="kicker" data-reveal>02 — Work</p>
@@ -181,7 +158,7 @@ const brandsEn = [
   </section>
 
   <!-- Numbers -->
-  <section class="nm" id="audience" data-tone="day">
+  <section class="nm" id="audience" data-tone="day" data-chapter="Audience">
     <div class="shell">
       <header class="hd2">
         <p class="kicker" data-reveal>03 — Audience</p>
@@ -232,7 +209,7 @@ const brandsEn = [
   </section>
 
   <!-- Services -->
-  <section class="sv" id="services" data-tone="night">
+  <section class="sv" id="services" data-tone="night" data-chapter="Services">
     <div class="shell">
       <header class="hd2">
         <p class="kicker" data-reveal>04 — Services</p>
@@ -258,7 +235,7 @@ const brandsEn = [
   </section>
 
   <!-- Process -->
-  <section class="pr" data-tone="day">
+  <section class="pr" data-tone="day" data-chapter="How I work">
     <div class="shell">
       <header class="hd2">
         <p class="kicker" data-reveal>05 — How I work</p>
@@ -272,7 +249,7 @@ const brandsEn = [
   </section>
 
   <!-- FAQ -->
-  <section class="fq" data-tone="night">
+  <section class="fq" data-tone="night" data-chapter="Questions">
     <div class="shell">
       <header class="hd2">
         <p class="kicker" data-reveal>06 — Common questions</p>
@@ -292,7 +269,7 @@ const brandsEn = [
   </section>
 
   <!-- Contact -->
-  <section class="ct" id="contact" data-tone="day">
+  <section class="ct" id="contact" data-tone="day" data-chapter="Last miles">
     <Marquee items={brandsEn} speed={0.4} />
     <div class="shell ct__inner">
       <header class="ct__head">
@@ -374,18 +351,6 @@ const brandsEn = [
 <style>
   .hd2 { display: flex; align-items: center; gap: 1.5rem; margin-bottom: clamp(2rem, 5vw, 4rem); }
   .rule { flex: 1; min-height: 1px; }
-
-  /* — Opening — */
-  .hd { min-height: 92svh; display: flex; align-items: center; padding-block: 8rem clamp(3rem, 6vw, 5rem); }
-  .hd__grid { display: grid; gap: clamp(2.5rem, 6vw, 5rem); width: 100%; }
-  @media (min-width: 900px) {
-    .hd__grid { grid-template-columns: minmax(0, 1fr) clamp(15rem, 26vw, 23rem); align-items: center; }
-  }
-  .hd__text { display: grid; gap: 1.5rem; align-content: center; }
-  .hd__title { margin: 0.5rem 0 0; }
-  .hd__title em { font-style: italic; color: var(--color-ochre); margin-left: 0.22em; display: inline-block; }
-  .hd__claim { max-width: 34ch; margin: 0; }
-  .hd__actions { display: flex; flex-wrap: wrap; gap: 1rem; padding-top: 0.5rem; }
 
   /* — Who — */
   .who { padding-block: clamp(5rem, 11vw, 11rem); }

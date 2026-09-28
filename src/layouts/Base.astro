@@ -134,18 +134,36 @@ const jsonLd = {
     {/* Sin JavaScript la web se lee entera: nada de quedarse tras el preloader */}
     <noscript>
       <style>
-        #preloader { display: none !important; }
+        #preloader, #sandstorm { display: none !important; }
         html.is-loading { overflow: auto !important; }
       </style>
     </noscript>
 
+    {/*
+      Llegada desde otra página del sitio: la ráfaga de arena ya la cubre.
+      Tiene que decidirse aquí, antes de pintar nada, o se vería un destello
+      de la página nueva antes de que la arena la tape.
+    */}
+    <script is:inline>
+      try {
+        if (sessionStorage.getItem('dpl-storm')) {
+          sessionStorage.removeItem('dpl-storm');
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('is-arriving');
+          }
+        }
+      } catch (e) {}
+    </script>
+
     {/* Seguro de última instancia por si el bundle nunca llega a ejecutarse */}
     <script is:inline>
       setTimeout(function () {
+        var root = document.documentElement;
+        root.classList.remove('is-arriving');
         var el = document.getElementById('preloader');
         if (el && !el.classList.contains('is-done')) {
           el.classList.add('is-done');
-          document.documentElement.classList.remove('is-loading');
+          root.classList.remove('is-loading');
         }
       }, 6000);
     </script>
@@ -155,16 +173,29 @@ const jsonLd = {
     {
       preload && (
         <div id="preloader">
-          <div class="preloader__inner">
-            <p class="kicker preloader__word">Diego DPL</p>
-            <p class="preloader__num display" data-preload-num>
-              000
-            </p>
-            <p class="kicker preloader__hint">El camino empieza solo</p>
+          {/*
+            Amanece a las seis: la hora del manifiesto. Mientras carga, el
+            horizonte se dibuja, el sol sale y el reloj llega a las 06:00.
+            main.ts escribe el avance en --p (0 → 1).
+          */}
+          <div class="pl">
+            <p class="kicker pl__word">Diego DPL</p>
+            <div class="pl__scene" aria-hidden="true">
+              <span class="pl__glow"></span>
+              <span class="pl__sun"></span>
+              <span class="pl__line"></span>
+            </div>
+            <p class="pl__time display" data-preload-num>05:30</p>
+            <p class="kicker pl__hint">{lang === 'en' ? 'Every road starts alone' : 'El camino empieza solo'}</p>
           </div>
         </div>
       )
     }
+
+    <div id="sandstorm" aria-hidden="true">
+      <span class="storm__grain"></span>
+      <p class="storm__label display" data-storm-label></p>
+    </div>
 
     <div class="vignette" aria-hidden="true"></div>
     <canvas id="dust-canvas" aria-hidden="true"></canvas>
@@ -210,21 +241,70 @@ const jsonLd = {
       }
       .skip:focus-visible { transform: none; }
 
-      .preloader__inner {
+      /* — Preloader: amanecer — */
+      #preloader {
+        --p: 0;
+        background:
+          radial-gradient(60% 45% at 50% 58%, rgb(201 138 69 / calc(var(--p) * 0.22)), transparent 70%),
+          var(--color-ink-900);
+      }
+      .pl {
         display: grid;
         justify-items: center;
-        gap: 1.25rem;
+        gap: 1.1rem;
         text-align: center;
       }
-      .preloader__num {
-        margin: 0;
-        font-size: clamp(4rem, 12vw, 9rem);
+      .pl__word,
+      .pl__hint,
+      .pl__time { margin: 0; }
+      .pl__hint { color: var(--color-sand-400); }
+
+      .pl__scene {
+        position: relative;
+        width: min(72vw, 30rem);
+        height: 6.5rem;
+        /* el sol sale de detrás de la línea: lo de abajo no se ve */
+        overflow: hidden;
+      }
+      .pl__line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--color-sand-300) 20%, var(--color-sand-300) 80%, transparent);
+        /* la línea se dibuja en el primer tercio del avance */
+        transform: scaleX(min(1, calc(var(--p) * 3)));
+      }
+      .pl__sun {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 4.5rem;
+        height: 4.5rem;
+        margin-left: -2.25rem;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 45%, #FFF1D6, #FFD08E 55%, #F3A05A);
+        /* asoma cuando ya hay horizonte y acaba con medio disco fuera */
+        transform: translateY(calc(100% - max(0, var(--p) - 0.25) * 90%));
+      }
+      .pl__glow {
+        position: absolute;
+        left: 50%;
+        bottom: -5rem;
+        width: 22rem;
+        height: 10rem;
+        margin-left: -11rem;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgb(242 154 82 / 0.55), transparent);
+        opacity: var(--p);
+      }
+      .pl__time {
+        font-size: clamp(3rem, 9vw, 6.5rem);
+        line-height: 1;
         color: var(--color-sand-100);
         font-variant-numeric: tabular-nums;
       }
-      .preloader__word,
-      .preloader__hint { margin: 0; }
-      .preloader__hint { color: var(--color-sand-400); }
     </style>
   </body>
 </html>

@@ -1,13 +1,41 @@
 ---
 import { site, mediaKitPdf } from '~/data/site';
 import Horizon from '~/components/Horizon.astro';
+import { en } from '~/data/en';
+
+interface Props {
+  lang?: 'es' | 'en';
+}
+const { lang = 'es' } = Astro.props;
+
+/*
+  La versión en inglés es la página para agencias: su acción principal es el
+  formulario de la propia página, y el segundo enlace lleva a la versión en
+  español en vez de al PDF (que está en español).
+*/
+const t =
+  lang === 'en'
+    ? {
+        chapter: 'The start',
+        claim: en.claimHtml,
+        cta: { label: 'Work with me', href: '#contact' },
+        second: { label: 'Versión en español', href: '/', download: false },
+        scroll: 'Scroll',
+      }
+    : {
+        chapter: 'La salida',
+        claim: 'Running, viajes y la clase de historias que sólo se cuentan <em>después</em> de haberlas caminado.',
+        cta: { label: 'Trabajar conmigo', href: '/media-kit' },
+        second: { label: mediaKitPdf.label, href: mediaKitPdf.file, download: true },
+        scroll: 'Desplázate',
+      };
 // TEMPORAL: retrato del hero retirado a petición de Diego.
 // Para devolverlo: descomenta este import y el bloque .hero__portrait de abajo.
 // import DustFrame from '~/components/DustFrame.astro';
 // import retrato from '~/assets/media/diego-super8.jpg';
 ---
 
-<section class="hero" data-tone="night" data-hero data-chapter="La salida">
+<section class="hero" data-tone="night" data-hero data-chapter={t.chapter}>
   <Horizon />
 
   <!--
@@ -15,7 +43,6 @@ import Horizon from '~/components/Horizon.astro';
     quedaba centrada con el resto y en portátil se metía detrás de la foto.
   -->
   <div class="hero__meta shell">
-    <p class="kicker hero__tag" data-hero-fade>{site.role}</p>
     <p class="kicker hero__coords" data-hero-fade>{site.coords}</p>
   </div>
 
@@ -25,10 +52,7 @@ import Horizon from '~/components/Horizon.astro';
       <span class="hero__line hero__line--b">DPL</span>
     </h1>
 
-    <p class="hero__claim" data-hero-fade>
-      Running, viajes y la clase de historias que sólo se cuentan
-      <em>después</em> de haberlas caminado.
-    </p>
+    <p class="hero__claim" data-hero-fade set:html={t.claim} />
 
     <!--
       La primera pantalla tenía claim pero ninguna acción: quien llega desde
@@ -36,18 +60,18 @@ import Horizon from '~/components/Horizon.astro';
       entrada comercial; el resto del viaje sigue intacto más abajo.
     -->
     <div class="hero__actions" data-hero-fade>
-      <a href="/media-kit" class="btn" data-magnetic>
-        Trabajar conmigo
+      <a href={t.cta.href} class="btn" data-magnetic>
+        {t.cta.label}
         <span aria-hidden="true">→</span>
       </a>
-      <a href={mediaKitPdf.file} class="hero__pdf" download>
-        <span class="kicker">{mediaKitPdf.label}</span>
-        <span aria-hidden="true">↓</span>
+      <a href={t.second.href} class="hero__pdf" download={t.second.download || undefined}>
+        <span class="kicker">{t.second.label}</span>
+        <span aria-hidden="true">{t.second.download ? '↓' : '→'}</span>
       </a>
     </div>
 
     <div class="hero__scroll" data-hero-fade>
-      <span class="kicker">Desplázate</span>
+      <span class="kicker">{t.scroll}</span>
       <span class="hero__scroll-line" aria-hidden="true"></span>
     </div>
   </div>
@@ -121,12 +145,11 @@ import Horizon from '~/components/Horizon.astro';
     z-index: 3; /* por encima del retrato */
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 1rem;
   }
-  .hero__tag,
-  .hero__coords { margin: 0; }
-  .hero__coords { text-align: right; }
+  /* Sólo las coordenadas: el rol ya lo dice el menú, justo encima */
+  .hero__coords { margin: 0; text-align: right; }
 
   .hero__title {
     grid-column: 1 / -1;
@@ -170,7 +193,8 @@ import Horizon from '~/components/Horizon.astro';
     color: var(--fg-muted);
     text-wrap: pretty;
   }
-  .hero__claim em { font-family: var(--font-display); font-size: 1.2em; color: var(--color-ochre); }
+  /* :global() porque el claim entra con set:html y no lleva el atributo de ámbito */
+  .hero__claim :global(em) { font-family: var(--font-display); font-size: 1.2em; color: var(--color-ochre); }
 
   .hero__scroll {
     grid-column: 1 / -1;

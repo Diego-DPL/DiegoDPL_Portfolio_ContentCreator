@@ -128,10 +128,26 @@ necesita imágenes ni audio: todo se genera en el navegador.
 | La arena | `scripts/dust.ts` | Viento lateral, granos que se estiran con la velocidad y arena rasante en el cuarto inferior. |
 | El revelado | `styles/global.css` (`.frame`) | Todas las fotos pasan por el mismo "carrete": cálido, negros levantados. |
 | El recorrido | `components/Journey.astro` + `scripts/journey.ts` | La página es un maratón (0 → 42,195 km) en el margen derecho. Los tramos salen de `data-chapter` en cada sección; sin ellos no aparece. |
+| El amanecer | `layouts/Base.astro` (`#preloader`) + `initPreloader` en `main.ts` | Preloader: sale el sol y el reloj va de 05:30 a 06:00. No se repite si llegas desde otra página del sitio. |
+| La ráfaga | `scripts/storm.ts` + `#sandstorm` en `global.css` | Transición entre páginas: un frente de arena cruza de izquierda a derecha. Para excluir un enlace, ponle `data-no-storm`. |
+| El tramo fijo | `sections/Desierto.astro` + bloque «El desierto» en `main.ts` | La sección se queda fija y la frase se enfoca palabra a palabra. |
+| El amanecer entre secciones | `components/Dawn.astro` | Puente del hero (noche) al primer bloque de día: el cielo se enciende y sale un sol. |
 | El viento | `scripts/wind.ts` | Sonido sintetizado, apagado por defecto (botón «Viento» del menú). Sopla más con el scroll rápido. |
 
 Si vuelves a poner el retrato del hero, quedará encima del sol: mueve el sol
 (`sun` en `Horizon.astro`) o el retrato.
+
+## Pendiente (Diego)
+
+Lo que falta para presentar la web a Awwwards depende de material propio:
+
+- [ ] **Vídeo.** Un loop corto (5-10 s, sin sonido, con grano) corriendo en
+      el desierto. Sitio natural: la sección fija «El desierto», en lugar de
+      la foto, y/o dentro de las tarjetas de «Trabajo». Pásalo en `.mp4`
+      (H.264, ≤ 4 MB) y se integra.
+- [ ] **Fotos.** 4-5 fotos a la altura del diseño, a ser posible hechas con
+      este concepto en mente (horizonte, figura pequeña, luz rasante).
+      La más débil ahora es «A pulmón» (cielo azul de móvil).
 
 ## SEO y visibilidad
 

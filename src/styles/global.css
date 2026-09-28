@@ -49,6 +49,8 @@
 
 /* El grano analógico, generado una sola vez y reutilizado por todo el sitio */
 :root {
+  /* Ruido en el canal alfa: sirve de máscara para bordes que se deshacen en granos */
+  --grain-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.9'/></filter><rect width='160' height='160' filter='url%28%23m%29'/></svg>");
   --grain-src: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='220' height='220' filter='url%28%23n%29'/></svg>");
 }
 
@@ -62,8 +64,9 @@
   --bg: var(--color-ink-900);
   --bg-raised: var(--color-ink-800);
   --fg: var(--color-sand-100);
-  --fg-muted: color-mix(in oklab, var(--color-sand-300) 62%, transparent);
-  --fg-faint: color-mix(in oklab, var(--color-sand-300) 26%, transparent);
+  --fg-muted: color-mix(in oklab, var(--color-sand-300) 78%, transparent);
+  /* el tenue sigue siendo texto: no baja de 4,5:1 sobre la tinta */
+  --fg-faint: color-mix(in oklab, var(--color-sand-300) 66%, transparent);
   --rule: color-mix(in oklab, var(--color-sand-300) 16%, transparent);
   --accent: var(--color-ochre);
   --dust-rgb: 232 190 140;
@@ -74,8 +77,8 @@
   --bg: var(--color-sand-50);
   --bg-raised: var(--color-sand-100);
   --fg: var(--color-ink-800);
-  --fg-muted: color-mix(in oklab, var(--color-ink-700) 62%, transparent);
-  --fg-faint: color-mix(in oklab, var(--color-ink-700) 26%, transparent);
+  --fg-muted: color-mix(in oklab, var(--color-ink-700) 74%, transparent);
+  --fg-faint: color-mix(in oklab, var(--color-ink-700) 63%, transparent);
   --rule: color-mix(in oklab, var(--color-ink-700) 16%, transparent);
   --accent: var(--color-clay);
   --dust-rgb: 140 98 60;
@@ -193,7 +196,9 @@
 /* El grano analógico: una capa de ruido sobre todo */
 .grain {
   position: fixed;
-  inset: -150%;
+  /* margen justo para su vaivén (±8%): una capa de 4x la pantalla pesaba
+     mucho en la GPU del móvil sin aportar nada */
+  inset: -12%;
   z-index: 3;
   pointer-events: none;
   opacity: var(--grain-opacity, 0.06);
@@ -503,6 +508,92 @@
   visibility: hidden;
 }
 html.is-loading { overflow: hidden; }
+html.is-arriving #preloader { display: none; }
+
+/* ============================================================
+   LA RÁFAGA — transición entre páginas (storm.ts)
+   Un frente de arena que cruza de izquierda a derecha. Sus dos
+   bordes son degradados de polvo, nunca un corte limpio.
+   ============================================================ */
+
+#sandstorm {
+  --edge: 38vw;
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: var(--color-ink-900);
+  transform: translate3d(calc(-100% - var(--edge)), 0, 0);
+  visibility: hidden;
+}
+/* frente de avance (derecha) y cola (izquierda) */
+#sandstorm::before,
+#sandstorm::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--edge);
+  --sand: linear-gradient(var(--dir), var(--color-ink-900) 0%, rgb(84 46 30 / 0.95) 24%, rgb(201 138 69 / 0.5) 55%, rgb(232 190 140 / 0.16) 80%, transparent);
+  background:
+    repeating-linear-gradient(180deg, transparent 0 2px, rgb(232 190 140 / 0.06) 2px 3px),
+    var(--sand);
+  /* El borde se deshace en granos: el degradado decide cuánta arena queda,
+     el ruido decide dónde. Sin esto es una barra de color con canto recto. */
+  --core: linear-gradient(var(--dir), #000 12%, transparent 40%);
+  --fade: linear-gradient(var(--dir), #000 20%, transparent);
+  -webkit-mask-image: var(--core), var(--fade), var(--grain-mask);
+  mask-image: var(--core), var(--fade), var(--grain-mask);
+  -webkit-mask-composite: source-over, source-in;
+  mask-composite: add, intersect;
+  -webkit-mask-size: 100% 100%, 100% 100%, 160px 160px;
+  mask-size: 100% 100%, 100% 100%, 160px 160px;
+}
+#sandstorm::before { left: 100%; --dir: 90deg; }
+#sandstorm::after { right: 100%; --dir: 270deg; }
+
+.storm__grain {
+  position: absolute;
+  inset: 0 calc(var(--edge) * -1);
+  background-image: var(--grain-src);
+  background-size: 180px 180px;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+}
+
+.storm__label {
+  position: relative;
+  margin: 0;
+  font-size: clamp(2.5rem, 1.5rem + 5vw, 6rem);
+  font-style: italic;
+  color: var(--color-sand-100);
+  opacity: 0;
+  filter: blur(10px);
+}
+
+/* Salida: la arena cubre la página que dejas */
+#sandstorm.is-covering {
+  visibility: visible;
+  transform: none;
+  transition: transform 0.82s cubic-bezier(0.7, 0, 0.3, 1);
+}
+#sandstorm.is-covering .storm__label {
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 0.5s var(--ease-soft) 0.34s, filter 0.6s var(--ease-dust) 0.34s;
+}
+
+/* Llegada: empieza cubriendo y sigue su camino hacia la derecha */
+html.is-arriving #sandstorm {
+  visibility: visible;
+  transform: none;
+}
+html.is-arriving #sandstorm.is-passing {
+  transform: translate3d(calc(100% + var(--edge)), 0, 0);
+  transition: transform 1.05s cubic-bezier(0.55, 0, 0.2, 1);
+}
 
 /* ============================================================
    ACCESIBILIDAD

@@ -6,7 +6,7 @@ import SplitText from '~/components/SplitText.astro';
 <section class="mf" id="manifiesto" data-tone="day" data-chapter="El camino">
   <div class="shell">
     <header class="mf__head">
-      <p class="kicker" data-reveal>01 — El camino</p>
+      <h2 class="kicker mf__label" data-reveal>01 — El camino</h2>
       <span class="mf__rule" data-reveal="line"></span>
     </header>
 
@@ -34,6 +34,8 @@ import SplitText from '~/components/SplitText.astro';
 
 <style>
   .mf { padding-block: clamp(6rem, 14vw, 14rem); }
+
+  .mf__label { margin: 0; font-weight: 400; }
 
   .mf__head {
     display: flex;
