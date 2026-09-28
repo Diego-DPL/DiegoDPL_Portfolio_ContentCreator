@@ -29,7 +29,6 @@ export function initHorizon(): void {
     svg.setAttribute('preserveAspectRatio', portrait.matches ? 'xMaxYMax slice' : 'xMidYMax slice');
   };
   frame();
-  portrait.addEventListener('change', frame);
 
   /* — Corredor: su x avanza, su y la dicta la cresta — */
   const total = path?.getTotalLength() ?? 0;
@@ -56,9 +55,33 @@ export function initHorizon(): void {
     return a.y + (b.y - a.y) * k;
   };
 
-  const START = 760;
+  /*
+    El tramo que corre depende de qué parte del paisaje se ve. En escritorio
+    se ve entero; en vertical el SVG recorta y sólo queda la parte derecha,
+    así que si empezara siempre en x=930 saldría fuera de plano y no se le
+    vería hasta hacer scroll. Se calcula el borde izquierdo visible.
+  */
   const END = 1540;
+  let START = 760;
   let runX = 930;
+  const fitRun = (): void => {
+    const r = svg.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    // 'slice' escala para cubrir: manda el lado que más escala
+    const scale = Math.max(r.width / 1600, r.height / 900);
+    const visibleW = r.width / scale;
+    const left = portrait.matches ? 1600 - visibleW : (1600 - visibleW) / 2;
+    // En vertical el título ocupa la mitad izquierda del paisaje: el corredor
+    // corre sólo por la mitad derecha, donde está el sol, para no quedar detrás
+    START = portrait.matches ? left + visibleW * 0.45 : Math.max(760, left - 40);
+    // Empieza ya dentro de plano: se le ve nada más cargar
+    runX = Math.max(runX, Math.min(END - 120, START + (END - START) * 0.25));
+  };
+  fitRun();
+  portrait.addEventListener('change', () => {
+    frame();
+    fitRun();
+  });
   let scrollPush = 0;
 
   const placeRunner = (): void => {

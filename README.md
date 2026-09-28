@@ -132,6 +132,8 @@ necesita imágenes ni audio: todo se genera en el navegador.
 | La ráfaga | `scripts/storm.ts` + `#sandstorm` en `global.css` | Transición entre páginas: un frente de arena cruza de izquierda a derecha. Para excluir un enlace, ponle `data-no-storm`. |
 | El tramo fijo | `sections/Desierto.astro` + bloque «El desierto» en `main.ts` | La sección se queda fija y la frase se enfoca palabra a palabra. |
 | El amanecer entre secciones | `components/Dawn.astro` | Puente del hero (noche) al primer bloque de día: el cielo se enciende y sale un sol. |
+| Imágenes para compartir | `scripts/og-images.mjs` (`npm run og`) | Regenera `og.jpg`, `og-diario.jpg` y `og-media-kit.jpg` con el horizonte del hero y las cifras de `site.ts`. Vuelve a lanzarlo si cambias las cifras. |
+| La 404 | `pages/404.astro` + `<Horizon night />` | El desierto de noche: sin corredor, con unas huellas que se acaban a mitad de la duna. |
 | El viento | `scripts/wind.ts` | Sonido sintetizado, apagado por defecto (botón «Viento» del menú). Sopla más con el scroll rápido. |
 
 Si vuelves a poner el retrato del hero, quedará encima del sol: mueve el sol

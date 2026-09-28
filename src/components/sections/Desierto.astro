@@ -144,6 +144,30 @@ import elDesierto from '~/assets/media/el-desierto.jpg';
   .dst__w { display: inline-block; }
   .dst__after { margin: 0.5rem 0 0; color: var(--color-sand-300); }
 
+  /*
+    Móvil: la foto es apaisada y en vertical ocupa todo el alto, así que la
+    figura cae en la mitad de abajo y el texto la tapaba. Aquí el texto sube
+    al cielo, que es la zona vacía, y la foto se encuadra sobre la figura
+    (main.ts además la acerca hacia ella).
+  */
+  @media (max-width: 899px) {
+    .dst {
+      align-items: flex-start;
+      padding-top: clamp(6.5rem, 16svh, 9rem);
+    }
+    .dst__media :global(.frame) { --pos: 40% 60% !important; }
+    .dst__scrim {
+      background: linear-gradient(
+        180deg,
+        rgb(11 9 7 / 0.8) 0%,
+        rgb(11 9 7 / 0.45) 30%,
+        rgb(11 9 7 / 0.08) 50%,
+        rgb(11 9 7 / 0.1) 72%,
+        rgb(11 9 7 / 0.75) 100%
+      );
+    }
+  }
+
   @media (min-width: 900px) {
     .dst { min-height: 100svh; }
   }

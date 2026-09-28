@@ -10,6 +10,10 @@ import { initWind } from './wind';
 import { initStorm } from './storm';
 
 gsap.registerPlugin(ScrollTrigger);
+// En móvil la barra del navegador aparece y desaparece al hacer scroll y
+// cambia el alto de la ventana: sin esto ScrollTrigger recalcula los
+// anclajes a mitad de gesto y la sección fija del desierto da saltos.
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -282,7 +286,17 @@ function initChoreography(): void {
         anticipatePin: 1,
       },
     });
-    if (img) tl.fromTo(img, { scale: 1.12 }, { scale: 1, ease: 'none', duration: 5 }, 0);
+    // En móvil la figura sale diminuta: se acerca hacia ella en vez de al centro
+    const narrow = window.matchMedia('(max-width: 899px)').matches;
+    if (img) {
+      if (narrow) img.style.transformOrigin = '40% 64%';
+      tl.fromTo(
+        img,
+        { scale: narrow ? 1.5 : 1.12 },
+        { scale: narrow ? 1.28 : 1, ease: 'none', duration: 5 },
+        0,
+      );
+    }
     if (words.length) {
       tl.fromTo(
         words,

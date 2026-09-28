@@ -1,6 +1,7 @@
 ---
 import Base from '~/layouts/Base.astro';
 import DustFrame from '~/components/DustFrame.astro';
+import Horizon from '~/components/Horizon.astro';
 import { getCollection, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import { site } from '~/data/site';
@@ -65,8 +66,15 @@ const schema = [
   image={imagenSocial}
 >
   <article>
-    <header class="po-hero" data-tone="night">
-      <div class="shell">
+    <!--
+      La cabecera es el mismo desierto de la portada: cada entrada es una
+      salida más. El eje de kilómetros también corre aquí, con los tramos
+      de la lectura.
+    -->
+    <header class="po-hero" data-tone="night" data-hero data-chapter={post.data.place ?? 'La salida'}>
+      <Horizon />
+      <div class="po-hero__veil" aria-hidden="true"></div>
+      <div class="shell po-hero__text">
         <a href="/diario" class="kicker po-back link-dust">← Diario</a>
         <h1 class="po-hero__title display t-lg" data-reveal>{post.data.title}</h1>
         <p class="po-hero__meta kicker" data-reveal style="--rv-delay:.1s">
@@ -96,7 +104,7 @@ const schema = [
       />
     </div>
 
-    <div class="po-body" data-tone="day">
+    <div class="po-body" data-tone="day" data-chapter="En el camino">
       <div class="shell">
         <div class="prose">
           <Content />
@@ -105,7 +113,7 @@ const schema = [
     </div>
   </article>
 
-  <section class="po-next" data-tone="night">
+  <section class="po-next" data-tone="night" data-chapter="Siguiente salida">
     <div class="shell">
       <p class="kicker" data-reveal>Siguiente</p>
       <a href={`/diario/${next.id}/`} class="po-next__link" data-reveal style="--rv-delay:.08s">
@@ -118,9 +126,22 @@ const schema = [
 
 <style>
   .po-hero {
+    position: relative;
+    min-height: min(88svh, 52rem);
     padding-block: 9rem clamp(2.5rem, 5vw, 4rem);
     display: grid;
     align-content: end;
+    overflow: clip;
+  }
+  .po-hero__text { position: relative; z-index: 2; }
+  /* El texto va a la izquierda, sobre la parte oscura del cielo */
+  .po-hero__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgb(11 9 7 / 0.55) 0%, transparent 25%, transparent 55%, rgb(11 9 7 / 0.85) 100%),
+      radial-gradient(70% 70% at 15% 70%, rgb(11 9 7 / 0.6), transparent 75%);
   }
   .po-back { display: inline-block; margin-bottom: 2.5rem; }
   .po-hero__title { margin: 0; max-width: 20ch; }

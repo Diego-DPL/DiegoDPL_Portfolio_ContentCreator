@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "media-kit": "astro build && node scripts/media-kit-pdf.mjs"
+    "media-kit": "astro build && node scripts/media-kit-pdf.mjs",
+    "og": "astro build && node scripts/og-images.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

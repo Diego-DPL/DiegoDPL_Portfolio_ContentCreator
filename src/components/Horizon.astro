@@ -12,7 +12,14 @@
  *
  * horizon.ts mueve las capas con el ratón y con el scroll, y hace correr
  * a la figura siguiendo la línea exacta de la cresta.
+ *
+ * `night` es la variante de la 404: el mismo desierto de noche, sin sol ni
+ * corredor. Sólo quedan unas huellas que se cortan a mitad de la duna.
  */
+interface Props {
+  night?: boolean;
+}
+const { night = false } = Astro.props;
 
 const W = 1600;
 const H = 900;
@@ -48,9 +55,9 @@ function smooth(pts: Array<[number, number]>): string {
 }
 
 const layers = [
-  { id: 'far', base: 648, amp: 16, seed: 0.4, freq: 1.6, fill: 'url(#hz-far)' },
-  { id: 'mid', base: 690, amp: 30, seed: 2.1, freq: 1.1, fill: 'url(#hz-mid)' },
-  { id: 'near', base: 752, amp: 38, seed: 4.3, freq: 0.9, fill: '#170E0B' },
+  { id: 'far', base: 648, amp: 16, seed: 0.4, freq: 1.6, fill: night ? '#2B211F' : 'url(#hz-far)' },
+  { id: 'mid', base: 690, amp: 30, seed: 2.1, freq: 1.1, fill: night ? '#191213' : 'url(#hz-mid)' },
+  { id: 'near', base: 752, amp: 38, seed: 4.3, freq: 0.9, fill: night ? '#100C0B' : '#170E0B' },
   { id: 'ground', base: 836, amp: 46, seed: 1.2, freq: 0.7, fill: '#0B0907' },
 ].map((l) => {
   const top = smooth(ridge(l.base, l.amp, l.seed, l.freq));
@@ -61,9 +68,41 @@ const [far, mid, near, ground] = layers as [typeof layers[0], typeof layers[0], 
 
 // Sol: bajo, a la derecha, medio hundido tras la primera cresta
 const sun = { x: 1236, y: 628, r: 54 };
+const rim = night ? 'url(#hz-rim-night)' : 'url(#hz-rim)';
+
+/* — Sólo de noche — */
+
+// Generador con semilla: el cielo es siempre el mismo
+let seedN = 7;
+const rand = (): number => ((seedN = (seedN * 16807) % 2147483647) / 2147483647);
+const stars = night
+  ? Array.from({ length: 110 }, () => ({
+      x: rand() * W,
+      y: rand() * 560,
+      r: 0.4 + rand() * 1.1,
+      o: 0.2 + rand() * 0.6,
+      twinkle: rand() < 0.18,
+    }))
+  : [];
+
+// Huellas por la cresta media: empiezan fuera de plano y se acaban de golpe
+const midRidge = ridge(690, 30, 2.1, 1.1);
+const crestY = (x: number): number => {
+  const i = midRidge.findIndex(([px]) => px >= x);
+  const [x1, y1] = midRidge[Math.max(0, i - 1)]!;
+  const [x2, y2] = midRidge[i]!;
+  return y1 + ((y2 - y1) * (x - x1)) / (x2 - x1 || 1);
+};
+const steps = night
+  ? Array.from({ length: 44 }, (_, i) => {
+      const x = 520 + i * 11;
+      return { x, y: crestY(x) + (i % 2 ? 1.6 : -0.4), o: Math.min(0.75, 0.15 + i * 0.02) };
+    })
+  : [];
+const moon = { x: 1150, y: 250, r: 20 };
 ---
 
-<div class="hz" data-horizon aria-hidden="true">
+<div class:list={['hz', night && 'hz--night']} data-horizon aria-hidden="true">
   <svg
     class="hz__svg"
     viewBox={`0 0 ${W} ${H}`}
@@ -123,6 +162,23 @@ const sun = { x: 1236, y: 628, r: 54 };
         <stop offset="1" stop-color="#F2A864" stop-opacity="0.1" />
       </linearGradient>
 
+      <!-- Noche: cielo casi negro con un poso cálido en el horizonte -->
+      <linearGradient id="hz-sky-night" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#050406" />
+        <stop offset="0.5" stop-color="#0C0A0D" />
+        <stop offset="0.66" stop-color="#1A1316" />
+        <stop offset="0.75" stop-color="#2E201C" />
+      </linearGradient>
+      <radialGradient id="hz-moon-halo">
+        <stop offset="0" stop-color="#EDE6D6" stop-opacity="0.22" />
+        <stop offset="1" stop-color="#EDE6D6" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="hz-rim-night" x1="0" y1="0" x2={W} y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#D9D2C4" stop-opacity="0" />
+        <stop offset="0.72" stop-color="#D9D2C4" stop-opacity="0.28" />
+        <stop offset="1" stop-color="#D9D2C4" stop-opacity="0.05" />
+      </linearGradient>
+
       <!-- Calima: el aire caliente hace temblar el sol -->
       <filter id="hz-haze" x="-20%" y="-20%" width="140%" height="140%">
         <feTurbulence type="fractalNoise" baseFrequency="0.004 0.16" numOctaves="1" seed="3">
@@ -133,16 +189,35 @@ const sun = { x: 1236, y: 628, r: 54 };
       </filter>
     </defs>
 
-    <rect width={W} height={H} fill="url(#hz-sky)" />
+    <rect width={W} height={H} fill={night ? 'url(#hz-sky-night)' : 'url(#hz-sky)'} />
 
-    <!-- Cielo y sol: se hunden y se apagan con el scroll -->
-    <g data-hz-sun>
-      <rect width={W} height={H} fill="url(#hz-glow)" />
-      <g filter="url(#hz-haze)">
-        <circle cx={sun.x} cy={sun.y} r={sun.r * 2.2} fill="url(#hz-halo)" />
-        <circle cx={sun.x} cy={sun.y} r={sun.r} fill="url(#hz-sun)" />
-      </g>
-    </g>
+    {
+      night ? (
+        <g data-hz-sun>
+          <g fill="#EDE6D6">
+            {stars.map((st) => (
+              <circle cx={st.x.toFixed(1)} cy={st.y.toFixed(1)} r={st.r.toFixed(2)} opacity={st.o.toFixed(2)}
+                class:list={[st.twinkle && 'hz__twinkle']} />
+            ))}
+          </g>
+          <circle cx={moon.x} cy={moon.y} r={moon.r * 5} fill="url(#hz-moon-halo)" opacity="0.6" />
+          <!-- cuarto menguante: una máscara recorta la luna, no el halo -->
+          <mask id="hz-crescent">
+            <circle cx={moon.x} cy={moon.y} r={moon.r} fill="#fff" />
+            <circle cx={moon.x + 9} cy={moon.y - 5} r={moon.r * 0.95} fill="#000" />
+          </mask>
+          <circle cx={moon.x} cy={moon.y} r={moon.r} fill="#EDE6D6" opacity="0.9" mask="url(#hz-crescent)" />
+        </g>
+      ) : (
+        <g data-hz-sun>
+          <rect width={W} height={H} fill="url(#hz-glow)" />
+          <g filter="url(#hz-haze)">
+            <circle cx={sun.x} cy={sun.y} r={sun.r * 2.2} fill="url(#hz-halo)" />
+            <circle cx={sun.x} cy={sun.y} r={sun.r} fill="url(#hz-sun)" />
+          </g>
+        </g>
+      )
+    }
 
     <!-- Noche que cae: sólo la mueve el scroll -->
     <rect width={W} height={H} fill="#0B0907" opacity="0" data-hz-dusk />
@@ -153,12 +228,23 @@ const sun = { x: 1236, y: 628, r: 54 };
 
     <g data-hz-layer="mid" data-depth="0.3">
       <path d={mid.shape} fill={mid.fill} />
-      <path d={mid.top} fill="none" stroke="url(#hz-rim)" stroke-width="1.4" />
+      <path d={mid.top} fill="none" stroke={rim} stroke-width="1.4" />
+
+      {
+        night && (
+          <g fill="#D9D2C4">
+            {steps.map((st) => (
+              <ellipse cx={st.x} cy={st.y.toFixed(1)} rx="1.8" ry="0.8" opacity={st.o.toFixed(2)} />
+            ))}
+          </g>
+        )
+      }
 
       <!--
         El corredor. Mide 15 unidades de alto en un paisaje de 1600:
         la escala es lo que cuenta la soledad.
       -->
+      {!night && <Fragment>
       <path d={mid.top} fill="none" stroke="none" data-hz-path />
       <g data-hz-runner transform="translate(1000 690)">
         <!-- sombra larga hacia la izquierda: el sol está a su derecha -->
@@ -197,11 +283,12 @@ const sun = { x: 1236, y: 628, r: 54 };
           </circle>
         </g>
       </g>
+      </Fragment>}
     </g>
 
     <g data-hz-layer="near" data-depth="0.6">
       <path d={near.shape} fill={near.fill} />
-      <path d={near.top} fill="none" stroke="url(#hz-rim)" stroke-width="1" opacity="0.55" />
+      <path d={near.top} fill="none" stroke={rim} stroke-width="1" opacity="0.55" />
     </g>
 
     <g data-hz-layer="ground" data-depth="1">
@@ -240,7 +327,16 @@ const sun = { x: 1236, y: 628, r: 54 };
     .hz { bottom: auto; height: 68svh; }
   }
 
+  .hz__twinkle { animation: hz-twinkle 3.8s ease-in-out infinite; }
+  .hz__twinkle:nth-child(3n) { animation-duration: 5.2s; animation-delay: -2s; }
+  .hz__twinkle:nth-child(5n) { animation-duration: 4.4s; animation-delay: -1s; }
+  @keyframes hz-twinkle {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.9; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hz { opacity: 1; transition: none; }
+    .hz__twinkle { animation: none; }
   }
 </style>

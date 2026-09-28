@@ -1,9 +1,13 @@
 ---
 import Base from '~/layouts/Base.astro';
+import Horizon from '~/components/Horizon.astro';
 ---
 
 <Base title="Te has salido del camino" description="Página no encontrada." preload={false}>
-  <section class="nf" data-tone="night">
+  <!-- El desierto de noche: nadie corre, y las huellas se acaban a mitad de la duna -->
+  <section class="nf" data-tone="night" data-hero>
+    <Horizon night />
+    <div class="nf__veil" aria-hidden="true"></div>
     <div class="shell nf__inner">
       <p class="kicker" data-reveal>Error 404</p>
       <h1 class="nf__title display t-xl" data-reveal style="--rv-delay:.08s">
@@ -14,15 +18,24 @@ import Base from '~/layouts/Base.astro';
         a ningún sitio. Se vuelve y se sigue.
       </p>
       <a href="/" class="btn" data-magnetic data-reveal style="--rv-delay:.24s">
-        Volver al inicio <span aria-hidden="true">→</span>
+        Volver al camino <span aria-hidden="true">→</span>
       </a>
     </div>
   </section>
 </Base>
 
 <style>
-  .nf { min-height: 100svh; display: grid; align-items: center; padding-block: 8rem; }
-  .nf__inner { display: grid; gap: 1.5rem; justify-items: start; }
+  .nf { position: relative; min-height: 100svh; display: grid; align-items: center; padding-block: 8rem; overflow: clip; }
+  .nf__inner { position: relative; z-index: 2; display: grid; gap: 1.5rem; justify-items: start; }
+  .nf__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(70% 80% at 15% 50%, rgb(5 4 6 / 0.7), transparent 75%);
+  }
+  @media (max-width: 899px) {
+    .nf { align-items: end; }
+  }
   .nf__title { margin: 0.5rem 0 0; }
   .nf__title em { font-style: italic; color: var(--color-ochre); }
   .nf__lede { max-width: 40ch; margin: 0 0 1rem; }
